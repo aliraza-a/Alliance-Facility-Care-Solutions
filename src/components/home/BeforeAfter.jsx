@@ -1,19 +1,25 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import SectionLabel from "../shared/SectionLabel";
 import AnimatedSection from "../shared/AnimatedSection";
+import { supabase } from "@/api/supabaseClient";
 
-const BEFORE_1 = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80";
-const AFTER_1  = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
-const BEFORE_2 = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80";
-const AFTER_2  = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/b227f519d_generated_8e867ea9.png";
-const BEFORE_3 = "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80";
-const AFTER_3  = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/731386f2c_generated_a7eb843a.png";
-
-const pairs = [
-  { label: "Commercial Office", before: BEFORE_1, after: AFTER_1 },
-  { label: "Restroom Sanitation", before: BEFORE_2, after: AFTER_2 },
-  { label: "Residential Interior", before: BEFORE_3, after: AFTER_3 },
+const DEFAULT_PAIRS = [
+  {
+    label: "Commercial Office",
+    before: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop",
+    after: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&q=80&auto=format&fit=crop"
+  },
+  {
+    label: "Restroom Sanitation",
+    before: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80&auto=format&fit=crop",
+    after: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80&auto=format&fit=crop"
+  },
+  {
+    label: "Residential Interior",
+    before: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80&auto=format&fit=crop",
+    after: "https://images.unsplash.com/photo-1610507676399-bc8eb36f0d47?w=800&q=80&auto=format&fit=crop"
+  },
 ];
 
 function SliderCard({ pair }) {
@@ -28,8 +34,18 @@ function SliderCard({ pair }) {
     setPosition((x / rect.width) * 100);
   }, []);
 
-  const onMouseMove = useCallback((e) => { if (dragging) getPos(e.clientX); }, [dragging, getPos]);
-  const onTouchMove = useCallback((e) => { getPos(e.touches[0].clientX); }, [getPos]);
+  const onMouseMove = useCallback(
+    (e) => {
+      if (dragging) getPos(e.clientX);
+    },
+    [dragging, getPos],
+  );
+  const onTouchMove = useCallback(
+    (e) => {
+      getPos(e.touches[0].clientX);
+    },
+    [getPos],
+  );
 
   return (
     <div className="space-y-3">
@@ -39,7 +55,10 @@ function SliderCard({ pair }) {
       <div
         ref={containerRef}
         className="relative select-none overflow-hidden rounded-2xl aspect-[4/3] cursor-col-resize shadow-xl"
-        style={{ boxShadow: "0 8px 32px rgba(0,80,60,0.18), 0 2px 8px rgba(0,80,60,0.10)" }}
+        style={{
+          boxShadow:
+            "0 8px 32px rgba(0,80,60,0.18), 0 2px 8px rgba(0,80,60,0.10)",
+        }}
         onMouseMove={onMouseMove}
         onMouseDown={() => setDragging(true)}
         onMouseUp={() => setDragging(false)}
@@ -49,7 +68,11 @@ function SliderCard({ pair }) {
         onTouchEnd={() => setDragging(false)}
       >
         {/* AFTER (full width, background) */}
-        <img src={pair.after} alt="After" className="absolute inset-0 w-full h-full object-cover" />
+        <img
+          src={pair.after || pair.after_image_url}
+          alt="After"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute bottom-4 right-4 bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md z-10 pointer-events-none">
           AFTER
         </div>
@@ -59,7 +82,12 @@ function SliderCard({ pair }) {
           className="absolute inset-0 overflow-hidden"
           style={{ width: `${position}%` }}
         >
-          <img src={pair.before} alt="Before" className="absolute inset-0 w-full h-full object-cover" style={{ width: `${10000 / position}%`, maxWidth: "none" }} />
+          <img
+            src={pair.before || pair.before_image_url}
+            alt="Before"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ width: `${10000 / position}%`, maxWidth: "none" }}
+          />
           <div className="absolute bottom-4 left-4 bg-[#031f18] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md z-10 pointer-events-none">
             BEFORE
           </div>
@@ -74,18 +102,53 @@ function SliderCard({ pair }) {
           {/* Handle */}
           <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white shadow-xl flex items-center justify-center border-2 border-primary/30">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M6 4L2 9L6 14" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M12 4L16 9L12 14" stroke="#166534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M6 4L2 9L6 14"
+                stroke="#166534"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M12 4L16 9L12 14"
+                stroke="#166534"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
         </div>
       </div>
-      <p className="text-xs text-center text-muted-foreground">Drag the slider to compare</p>
+      <p className="text-xs text-center text-muted-foreground">
+        Drag the slider to compare
+      </p>
     </div>
   );
 }
 
 export default function BeforeAfter() {
+  const [pairs, setPairs] = useState(DEFAULT_PAIRS);
+
+  useEffect(() => {
+    async function fetchPairs() {
+      try {
+        const { data, error } = await supabase
+          .from("before_after_sliders")
+          .select("*")
+          .eq("is_active", true)
+          .order("order_index", { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          setPairs(data);
+        }
+      } catch (err) {
+        console.error("Error fetching before/after pairs:", err);
+      }
+    }
+    fetchPairs();
+  }, []);
+
   return (
     <section className="py-24 lg:py-36 relative overflow-hidden">
       <div className="absolute inset-0 section-gradient-alt" />
@@ -101,13 +164,14 @@ export default function BeforeAfter() {
             </span>
           </h2>
           <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Drag the slider on each image to reveal the transformation our team delivers on every project.
+            Drag the slider on each image to reveal the transformation our team
+            delivers on every project.
           </p>
         </AnimatedSection>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {pairs.map((pair, i) => (
-            <AnimatedSection key={pair.label} delay={i * 0.1}>
+            <AnimatedSection key={pair.id || pair.label} delay={i * 0.1}>
               <SliderCard pair={pair} />
             </AnimatedSection>
           ))}

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Shield, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
-const HERO_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format&fit=crop";
 
 function AnimatedCounter({ target, suffix = "", duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -28,7 +29,12 @@ function AnimatedCounter({ target, suffix = "", duration = 2000 }) {
     return () => clearInterval(interval);
   }, [started, target, duration]);
 
-  return <span>{count}{suffix}</span>;
+  return (
+    <span>
+      {count}
+      {suffix}
+    </span>
+  );
 }
 
 export default function HeroSection() {
@@ -47,7 +53,10 @@ export default function HeroSection() {
 
       {/* Floating orbs */}
       <div className="floating-orb w-96 h-96 bg-emerald-400 top-20 right-40 hidden lg:block" />
-      <div className="floating-orb w-64 h-64 bg-teal-300 bottom-32 right-20 hidden lg:block" style={{ animationDelay: "3s" }} />
+      <div
+        className="floating-orb w-64 h-64 bg-teal-300 bottom-32 right-20 hidden lg:block"
+        style={{ animationDelay: "3s" }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-32 w-full">
         <div className="max-w-2xl">
@@ -66,7 +75,11 @@ export default function HeroSection() {
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            transition={{
+              duration: 0.85,
+              delay: 0.12,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="text-5xl md:text-6xl lg:text-7xl font-semibold text-white leading-[1.08] tracking-tight"
           >
             The Invisible
@@ -79,22 +92,33 @@ export default function HeroSection() {
           <motion.p
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            transition={{
+              duration: 0.85,
+              delay: 0.28,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="mt-7 text-lg text-white/65 leading-relaxed max-w-lg"
           >
-            Alliance Facility Care Solutions delivers precision-driven cleaning 
-            for commercial and residential environments that demand nothing less 
+            Alliance Facility Care Solutions delivers precision-driven cleaning
+            for commercial and residential environments that demand nothing less
             than perfection.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            transition={{
+              duration: 0.85,
+              delay: 0.42,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
             <Link to="/book">
-              <Button size="lg" className="btn-3d bg-primary hover:bg-primary/90 text-white px-8 py-6 text-sm font-semibold rounded-xl w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="btn-3d bg-primary hover:bg-primary/90 text-white px-8 py-6 text-sm font-semibold rounded-xl w-full sm:w-auto"
+              >
                 Book a Service
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
@@ -122,9 +146,14 @@ export default function HeroSection() {
               { icon: Star, label: "Top Rated" },
               { icon: Clock, label: "On-Time Guarantee" },
             ].map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-2 bg-white/8 backdrop-blur-sm border border-white/15 rounded-full px-4 py-2">
+              <div
+                key={label}
+                className="flex items-center gap-2 bg-white/8 backdrop-blur-sm border border-white/15 rounded-full px-4 py-2"
+              >
                 <Icon className="w-3.5 h-3.5 text-emerald-300" />
-                <span className="text-xs text-white/75 font-medium">{label}</span>
+                <span className="text-xs text-white/75 font-medium">
+                  {label}
+                </span>
               </div>
             ))}
           </motion.div>
@@ -161,7 +190,9 @@ export default function HeroSection() {
         transition={{ delay: 1.5, duration: 1 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-xs text-white/30 font-mono uppercase tracking-widest">Scroll</span>
+        <span className="text-xs text-white/30 font-mono uppercase tracking-widest">
+          Scroll
+        </span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}

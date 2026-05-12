@@ -2,38 +2,60 @@ import React from "react";
 import { Star, Quote } from "lucide-react";
 import SectionLabel from "../shared/SectionLabel";
 import AnimatedSection from "../shared/AnimatedSection";
+import { useCMS } from "@/lib/CMSContext";
 
-const testimonials = [
+const DEFAULT_TESTIMONIALS = [
   {
-    quote: "Alliance transformed our office environment. The consistency and attention to detail they bring every single visit is remarkable. Our employees have noticed the difference.",
-    name: "Sarah Mitchell",
-    title: "Operations Director",
-    company: "Meridian Property Group",
+    content: "Alliance transformed our office environment. The consistency and attention to detail they bring every single visit is remarkable. Our employees have noticed the difference.",
+    author_name: "Sarah Mitchell",
+    author_title: "Operations Director",
+    author_image_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
     rating: 5,
-    initials: "SM",
-    color: "from-emerald-500 to-teal-600",
   },
   {
-    quote: "After trying multiple cleaning services, Alliance is the first that actually delivers on their promises. Their floor restoration work on our lobby was exceptional.",
-    name: "David Chen",
-    title: "Facility Manager",
-    company: "Pacific Tower Management",
+    content: "After trying multiple cleaning services, Alliance is the first that actually delivers on their promises. Their floor restoration work on our lobby was exceptional.",
+    author_name: "David Chen",
+    author_title: "Facility Manager",
+    author_image_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
     rating: 5,
-    initials: "DC",
-    color: "from-teal-500 to-cyan-600",
   },
   {
-    quote: "We manage 12 commercial properties and trust Alliance with every one. Their reporting and communication is best-in-class. A true partner, not just a vendor.",
-    name: "Katherine Rowe",
-    title: "Regional Director",
-    company: "Cornerstone Real Estate",
+    content: "We manage 12 commercial properties and trust Alliance with every one. Their reporting and communication is best-in-class. A true partner, not just a vendor.",
+    author_name: "Katherine Rowe",
+    author_title: "Regional Director",
+    author_image_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
     rating: 5,
-    initials: "KR",
-    color: "from-green-500 to-emerald-600",
   },
 ];
 
+const STAT_COLORS = [
+  "from-emerald-500 to-teal-600",
+  "from-teal-500 to-cyan-600",
+  "from-green-500 to-emerald-600",
+];
+
+function getInitials(name) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+function getColorForIndex(index) {
+  return STAT_COLORS[index % STAT_COLORS.length];
+}
+
 export default function Testimonials() {
+  const { testimonials: cmsTestimonials } = useCMS();
+  
+  // Get featured testimonials from CMS, fallback to defaults
+  const featuredTestimonials = cmsTestimonials
+    .filter(t => t.is_featured)
+    .slice(0, 3);
+  
+  const displayTestimonials = featuredTestimonials.length > 0 ? featuredTestimonials : DEFAULT_TESTIMONIALS;
+
   return (
     <section className="py-24 lg:py-36 relative overflow-hidden">
       <div className="absolute inset-0 section-gradient" />
@@ -51,12 +73,12 @@ export default function Testimonials() {
         </AnimatedSection>
 
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {testimonials.map((t, i) => (
-            <AnimatedSection key={t.name} delay={i * 0.12}>
+          {displayTestimonials.map((t, i) => (
+            <AnimatedSection key={t.author_name} delay={i * 0.12}>
               <div className="card-3d glass-card rounded-2xl p-8 h-full flex flex-col">
                 {/* Stars */}
                 <div className="flex gap-1 mb-5">
-                  {Array.from({ length: t.rating }).map((_, j) => (
+                  {Array.from({ length: t.rating || 5 }).map((_, j) => (
                     <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
@@ -65,19 +87,24 @@ export default function Testimonials() {
                 <Quote className="w-8 h-8 text-primary/20 mb-3" />
 
                 <blockquote className="text-sm text-foreground/80 leading-relaxed flex-1">
-                  "{t.quote}"
+                  "{t.content}"
                 </blockquote>
 
                 <div className="mt-8 pt-6 border-t border-border/50 flex items-center gap-4">
-                  <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
-                    {t.initials}
-                  </div>
+                  {t.author_image_url ? (
+                    <img 
+                      src={t.author_image_url} 
+                      alt={t.author_name}
+                      className="w-11 h-11 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${getColorForIndex(i)} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
+                      {getInitials(t.author_name)}
+                    </div>
+                  )}
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.title}</p>
-                    <p className="text-xs font-mono uppercase tracking-wider text-primary mt-0.5">
-                      {t.company}
-                    </p>
+                    <p className="text-sm font-semibold text-foreground">{t.author_name}</p>
+                    <p className="text-xs text-muted-foreground">{t.author_title}</p>
                   </div>
                 </div>
               </div>

@@ -1,59 +1,75 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 import SectionLabel from "../shared/SectionLabel";
 import AnimatedSection from "../shared/AnimatedSection";
 
-const FLOOR_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/9477aecc8_generated_bdc78104.png";
-const STEAM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/3fcd05348_generated_94a3635f.png";
-const WINDOW_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/a47ec970e_generated_be1f96d2.png";
-const CARPET_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/f4473b51c_generated_0f818e02.png";
-const HERO_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
-const RESIDENTIAL_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/731386f2c_generated_a7eb843a.png";
-const TEAM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/d211f6f72_generated_2322c3ce.png";
-const BOARDROOM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/b227f519d_generated_8e867ea9.png";
+const FLOOR_IMAGE =
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop";
+const STEAM_IMAGE =
+  "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80&auto=format&fit=crop";
+const WINDOW_IMAGE =
+  "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80&auto=format&fit=crop";
+const CARPET_IMAGE =
+  "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80&auto=format&fit=crop";
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop";
+const RESIDENTIAL_IMAGE =
+  "https://images.unsplash.com/photo-1610507676399-bc8eb36f0d47?w=800&q=80&auto=format&fit=crop";
+const TEAM_IMAGE =
+  "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80&auto=format&fit=crop";
+const BOARDROOM_IMAGE =
+  "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&q=80&auto=format&fit=crop";
 
 const services = [
   {
     title: "Commercial Janitorial",
-    description: "Comprehensive facility maintenance programs for offices, retail, and corporate environments.",
+    description:
+      "Comprehensive facility maintenance programs for offices, retail, and corporate environments.",
     image: HERO_IMAGE,
     tag: "Most Popular",
   },
   {
     title: "Deep Cleaning",
-    description: "Intensive sanitization using hospital-grade protocols for a thorough, spotless result.",
+    description:
+      "Intensive sanitization using hospital-grade protocols for a thorough, spotless result.",
     image: STEAM_IMAGE,
   },
   {
     title: "Carpet Cleaning",
-    description: "Professional hot-water extraction removing embedded dirt, allergens, and stains.",
+    description:
+      "Professional hot-water extraction removing embedded dirt, allergens, and stains.",
     image: CARPET_IMAGE,
   },
   {
     title: "Floor Stripping & Waxing",
-    description: "Expert restoration and protective coatings for a high-gloss, lasting finish.",
+    description:
+      "Expert restoration and protective coatings for a high-gloss, lasting finish.",
     image: FLOOR_IMAGE,
   },
   {
     title: "Window Cleaning",
-    description: "Crystal-clear interior and exterior results for buildings of any height.",
+    description:
+      "Crystal-clear interior and exterior results for buildings of any height.",
     image: WINDOW_IMAGE,
   },
   {
     title: "Residential Cleaning",
-    description: "Move-in, move-out, and periodic deep cleaning for homes and apartments.",
+    description:
+      "Move-in, move-out, and periodic deep cleaning for homes and apartments.",
     image: RESIDENTIAL_IMAGE,
   },
   {
     title: "Restroom Sanitation",
-    description: "Clinical-grade disinfection to protect health and maintain facility reputation.",
+    description:
+      "Clinical-grade disinfection to protect health and maintain facility reputation.",
     image: BOARDROOM_IMAGE,
   },
   {
     title: "Construction Cleanup",
-    description: "Pre and post-construction debris removal and final detailing for client handoff.",
+    description:
+      "Pre and post-construction debris removal and final detailing for client handoff.",
     image: TEAM_IMAGE,
   },
 ];
@@ -64,7 +80,10 @@ export default function ServicesOverview() {
       {/* Background */}
       <div className="absolute inset-0 section-gradient" />
       <div className="floating-orb w-80 h-80 bg-teal-300 -top-20 -right-20 opacity-10" />
-      <div className="floating-orb w-60 h-60 bg-emerald-400 bottom-10 left-10 opacity-8" style={{ animationDelay: "4s" }} />
+      <div
+        className="floating-orb w-60 h-60 bg-emerald-400 bottom-10 left-10 opacity-8"
+        style={{ animationDelay: "4s" }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
@@ -72,11 +91,14 @@ export default function ServicesOverview() {
           <SectionLabel>Our Services</SectionLabel>
           <h2 className="text-3xl lg:text-5xl font-semibold tracking-tight text-foreground leading-tight">
             Precision care for
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> every environment</span>
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {" "}
+              every environment
+            </span>
           </h2>
           <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            From daily janitorial operations to specialized restoration, we deliver 
-            measurable results with professional-grade equipment.
+            From daily janitorial operations to specialized restoration, we
+            deliver measurable results with professional-grade equipment.
           </p>
         </AnimatedSection>
 
@@ -101,7 +123,7 @@ export default function ServicesOverview() {
                     <h3 className="text-white font-semibold text-base leading-tight mb-1">
                       {service.title}
                     </h3>
-                    <p className="text-white/70 text-xs leading-relaxed line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-400 translate-y-2 group-hover:translate-y-0 transition-transform duration-400">
+                    <p className="text-white/70 text-xs leading-relaxed line-clamp-2 opacity-0 group-hover:opacity-100 duration-400 translate-y-2 group-hover:translate-y-0 transition-transform duration-400">
                       {service.description}
                     </p>
                     <div className="mt-3 flex items-center gap-1 text-emerald-300 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-400">

@@ -48,6 +48,7 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -111,6 +112,11 @@
     --admin-text-muted: #64748b;
     --admin-border: rgba(0, 0, 0, 0.08);
     --admin-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    
+    /* Override global shadcn variables for portals */
+    --background: 155 30% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 180 15% 8%;
   }
 
   .admin-dark {
@@ -121,6 +127,11 @@
     --admin-text-muted: rgba(255, 255, 255, 0.5);
     --admin-border: rgba(255, 255, 255, 0.1);
     --admin-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    /* Override global shadcn variables for portals */
+    --background: 165 40% 4%;
+    --popover: 165 40% 6%;
+    --popover-foreground: 0 0% 100%;
   }
 
   .glass-card:hover {
@@ -227,21 +238,72 @@
     70% { box-shadow: 0 0 0 12px rgba(16,185,129,0); }
     100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
   }
-}
 
-/* ─── DARK MODE FIXES ─── */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus {
-  -webkit-text-fill-color: white !important;
-  -webkit-box-shadow: 0 0 0px 1000px #03110d inset !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
+  /* ─── DARK MODE FIXES ─── */
+  .admin-dark input:-webkit-autofill,
+  .admin-dark input:-webkit-autofill:hover,
+  .admin-dark input:-webkit-autofill:focus,
+  .admin-dark textarea:-webkit-autofill,
+  .admin-dark textarea:-webkit-autofill:hover,
+  .admin-dark textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0px 1000px #03110d inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 
-input:focus, textarea:focus {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  color: white !important;
+  .admin-dark input:focus, .admin-dark textarea:focus {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: white !important;
+  }
+
+  /* ─── ADMIN DIALOG FIXES ─── */
+  .admin-dialog-content {
+    background-color: var(--admin-sidebar) !important;
+    background-image: none !important;
+    opacity: 1 !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+    max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Force solid background on all radix portals in admin */
+  .admin-light [data-radix-portal] > div {
+    --background: 155 30% 95%;
+    --popover: 0 0% 100%;
+  }
+
+  .admin-dark [data-radix-portal] > div {
+    --background: 165 40% 4%;
+    --popover: 165 40% 6%;
+  }
+
+  .admin-dialog-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--admin-border);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .admin-dialog-form {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--admin-border) transparent;
+  }
+
+  .admin-dialog-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--admin-border);
+    background-color: rgba(0, 0, 0, 0.02);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
 }

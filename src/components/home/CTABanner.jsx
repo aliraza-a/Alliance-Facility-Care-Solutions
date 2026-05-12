@@ -74,8 +74,8 @@ export default function CTABanner() {
 
               <div className="space-y-4">
                 {[
-                  { label: "Phone", value: "(555) 123-4567", href: "tel:5551234567" },
-                  { label: "Email", value: "info@alliancefcs.com", href: "mailto:info@alliancefcs.com" },
+                  { label: "Phone", value: "+1 314 705 4493", href: "tel:+13147054493" },
+                  { label: "Email", value: "support@alliancefacilitycaresolution.com", href: "mailto:support@alliancefacilitycaresolution.com" },
                   { label: "Hours", value: "Mon – Sat: 7:00 AM – 7:00 PM", href: null },
                 ].map((item) => (
                   <div key={item.label} className="flex justify-between items-center py-3 border-b border-white/10 last:border-0">

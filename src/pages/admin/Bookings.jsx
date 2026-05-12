@@ -68,18 +68,25 @@ export default function AdminBookings() {
     }
   };
 
-  const filteredBookings = bookings.filter(b => 
-    b.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.customer_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.service?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredBookings = bookings.filter(b => {
+    const matchesSearch = 
+      b.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      b.customer_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      b.service?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || b.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const getStatusBadge = (status) => {
     switch (status) {
       case 'confirmed': return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Confirmed</Badge>;
       case 'pending': return <Badge className="bg-orange-500/10 text-orange-600 border-orange-500/20">Pending</Badge>;
       case 'cancelled': return <Badge className="bg-red-500/10 text-red-600 border-red-500/20">Cancelled</Badge>;
-      default: return <Badge variant="outline" className="text-[var(--admin-text-muted)]">New</Badge>;
+      default: return <Badge variant="outline" className="text-[var(--admin-text-muted)] border-[var(--admin-border)]">New</Badge>;
     }
   };
 
@@ -100,10 +107,25 @@ export default function AdminBookings() {
               className="bg-[var(--admin-card-bg)] border-[var(--admin-border)] text-[var(--admin-text)] pl-10 rounded-xl w-full"
             />
           </div>
-          <Button variant="outline" className="border-[var(--admin-border)] bg-[var(--admin-card-bg)] text-[var(--admin-text)] rounded-xl">
-            <Filter className="w-4 h-4 mr-2 opacity-50" />
-            Filter
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="border-[var(--admin-border)] bg-[var(--admin-card-bg)] text-[var(--admin-text)] rounded-xl">
+                <Filter className="w-4 h-4 mr-2 opacity-50" />
+                Filter: <span className="ml-1 capitalize">{statusFilter}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[var(--admin-sidebar)] border-[var(--admin-border)] text-[var(--admin-text)]">
+              {['all', 'new', 'pending', 'confirmed', 'cancelled'].map((status) => (
+                <DropdownMenuItem 
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`capitalize ${statusFilter === status ? 'bg-black/5 dark:bg-white/5 font-bold' : ''}`}
+                >
+                  {status}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

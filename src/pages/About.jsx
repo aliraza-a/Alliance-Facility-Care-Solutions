@@ -88,7 +88,7 @@ export default function About() {
                   className="absolute -bottom-6 -right-6 hidden md:block"
                 >
                   <div className="glass-card rounded-2xl p-6 text-center min-w-[140px]">
-                    <p className="text-4xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">15+</p>
+                    <p className="text-4xl font-bold bg-gradient-to-br from-primary to-teal-600 bg-clip-text text-emerald-600">15+</p>
                     <p className="text-xs font-semibold text-foreground mt-1">Years of Excellence</p>
                     <p className="text-xs text-muted-foreground mt-0.5">Est. 2009</p>
                   </div>
@@ -125,7 +125,7 @@ export default function About() {
                   { val: "99%", label: "Retention" },
                 ].map((s) => (
                   <div key={s.label} className="glass-card rounded-xl p-4 text-center stat-counter">
-                    <p className="text-2xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">{s.val}</p>
+                    <p className="text-2xl font-bold bg-gradient-to-br from-primary to-teal-600 bg-clip-text text-emerald-600">{s.val}</p>
                     <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
                   </div>
                 ))}
@@ -199,7 +199,7 @@ export default function About() {
             <SectionLabel>Our Values</SectionLabel>
             <h2 className="text-3xl lg:text-5xl font-semibold tracking-tight text-foreground">
               The principles that
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> guide our work</span>
+              <span className="bg-gradient-to-r from-primary to-teal-600 bg-clip-text text-emerald-600"> guide our work</span>
             </h2>
           </AnimatedSection>
 

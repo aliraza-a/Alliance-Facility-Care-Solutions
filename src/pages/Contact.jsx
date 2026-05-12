@@ -9,17 +9,47 @@ import SectionLabel from "../components/shared/SectionLabel";
 import AnimatedSection from "../components/shared/AnimatedSection";
 import { toast } from "sonner";
 
-const HERO_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format&fit=crop";
 
 const contactDetails = [
-  { icon: Phone, label: "Phone", value: "(555) 123-4567", href: "tel:5551234567", color: "from-emerald-500 to-teal-600" },
-  { icon: Mail, label: "Email", value: "info@alliancefcs.com", href: "mailto:info@alliancefcs.com", color: "from-teal-500 to-cyan-600" },
-  { icon: MapPin, label: "Address", value: "123 Commerce Drive, Suite 200", href: null, color: "from-green-500 to-emerald-600" },
-  { icon: Clock, label: "Hours", value: "Mon – Sat: 7:00 AM – 7:00 PM", href: null, color: "from-cyan-500 to-teal-600" },
+  {
+    icon: Phone,
+    label: "Phone",
+    value: "+1 314 705 4493",
+    href: "tel:+13147054493",
+    color: "from-emerald-500 to-teal-600",
+  },
+  {
+    icon: Mail,
+    label: "Email",
+    value: "support@alliancefacilitycaresolution.com",
+    href: "mailto:support@alliancefacilitycaresolution.com",
+    color: "from-teal-500 to-cyan-600",
+  },
+  {
+    icon: MapPin,
+    label: "Address",
+    value: "1093 Ferguson Ave St. Louis 63130, Missouri",
+    href: null,
+    color: "from-green-500 to-emerald-600",
+  },
+  {
+    icon: Clock,
+    label: "Hours",
+    value: "Mon – Sat: 7:00 AM – 7:00 PM",
+    href: null,
+    color: "from-cyan-500 to-teal-600",
+  },
 ];
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -27,14 +57,12 @@ export default function Contact() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert([form]);
-      
+      const { error } = await supabase.from("contact_messages").insert([form]);
+
       if (error) throw error;
       setSubmitted(true);
     } catch (error) {
-      console.error('Error submitting contact message:', error);
+      console.error("Error submitting contact message:", error);
       toast.error("Failed to send message. Please try again.");
     } finally {
       setSubmitting(false);
@@ -62,7 +90,7 @@ export default function Contact() {
               </span>
             </h1>
             <p className="mt-6 text-white/60 max-w-lg leading-relaxed">
-              Reach out to our team for a consultation, quote, or any questions. 
+              Reach out to our team for a consultation, quote, or any questions.
               We respond within one business day.
             </p>
           </AnimatedSection>
@@ -76,7 +104,6 @@ export default function Contact() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-12 gap-16 lg:gap-20">
-
             {/* Form */}
             <AnimatedSection className="lg:col-span-7">
               {submitted ? (
@@ -84,55 +111,81 @@ export default function Contact() {
                   <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <CheckCircle2 className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-2xl font-semibold text-foreground mb-3">Message Received</h3>
+                  <h3 className="text-2xl font-semibold text-foreground mb-3">
+                    Message Received
+                  </h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Thank you for reaching out. Our team will respond within one business day.
+                    Thank you for reaching out. Our team will respond within one
+                    business day.
                   </p>
                 </div>
               ) : (
                 <div className="glass-card rounded-2xl p-8 lg:p-10">
-                  <h2 className="text-xl font-semibold text-foreground mb-8">Send us a message</h2>
+                  <h2 className="text-xl font-semibold text-foreground mb-8">
+                    Send us a message
+                  </h2>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Full Name</Label>
+                        <Label className="text-sm font-medium text-foreground">
+                          Full Name
+                        </Label>
                         <Input
                           required
                           value={form.name}
-                          onChange={(e) => setForm({ ...form, name: e.target.value })}
+                          onChange={(e) =>
+                            setForm({ ...form, name: e.target.value })
+                          }
                           placeholder="Your full name"
-                          className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl"
+                          className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Email Address</Label>
+                        <Label className="text-sm font-medium text-foreground">
+                          Email Address
+                        </Label>
                         <Input
                           type="email"
                           required
                           value={form.email}
-                          onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          onChange={(e) =>
+                            setForm({ ...form, email: e.target.value })
+                          }
                           placeholder="your@email.com"
-                          className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl"
+                          className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium text-foreground">Phone Number</Label>
+                      <Label className="text-sm font-medium text-foreground">
+                        Phone Number *
+                      </Label>
                       <Input
+                        required
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        placeholder="(555) 000-0000"
-                        className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl"
+                        onChange={(e) => {
+                          const value = e.target.value
+                            .replace(/\D/g, "")
+                            .slice(0, 10);
+                          setForm({ ...form, phone: value });
+                        }}
+                        placeholder="(555) 000-0000 (10 digits max)"
+                        maxLength="10"
+                        className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium text-foreground">Message</Label>
+                      <Label className="text-sm font-medium text-foreground">
+                        Message
+                      </Label>
                       <Textarea
                         required
                         value={form.message}
-                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, message: e.target.value })
+                        }
                         placeholder="Tell us about your facility care needs..."
-                        className="min-h-[160px] bg-white/60 border-border/60 focus:border-primary/50 rounded-xl"
+                        className="min-h-[160px] bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
                       />
                     </div>
                     <Button
@@ -152,8 +205,13 @@ export default function Contact() {
             <AnimatedSection className="lg:col-span-5" delay={0.15}>
               <div className="space-y-5 mb-10">
                 {contactDetails.map((detail) => (
-                  <div key={detail.label} className="card-3d-subtle glass-card rounded-2xl p-5 flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${detail.color} flex items-center justify-center shrink-0 shadow-md`}>
+                  <div
+                    key={detail.label}
+                    className="card-3d-subtle glass-card rounded-2xl p-5 flex items-center gap-4"
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${detail.color} flex items-center justify-center shrink-0 shadow-md`}
+                    >
                       <detail.icon className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -161,11 +219,16 @@ export default function Contact() {
                         {detail.label}
                       </p>
                       {detail.href ? (
-                        <a href={detail.href} className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">
+                        <a
+                          href={detail.href}
+                          className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                        >
                           {detail.value}
                         </a>
                       ) : (
-                        <p className="text-sm font-semibold text-foreground">{detail.value}</p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {detail.value}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -175,7 +238,7 @@ export default function Contact() {
               <div className="image-card aspect-[4/3] rounded-2xl overflow-hidden">
                 <iframe
                   title="Office Location"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215573!2d-73.9857!3d40.7484!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQ0JzU0LjIiTiA3M8KwNTknMDguNSJX!5e0!3m2!1sen!2sus!4v1"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3114.733596700547!2d-90.31744152345638!3d38.67562097177309!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87df34927f804595%3A0xc3f5879a9578277c!2s1093%20Ferguson%20Ave%2C%20St.%20Louis%2C%20MO%2063133%2C%20USA!5e0!3m2!1sen!2s!4v1715420000000!5m2!1sen!2s"
                   width="100%"
                   height="100%"
                   style={{ border: 0, filter: "saturate(0.7) contrast(1.1)" }}
