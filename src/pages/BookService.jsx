@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/api/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,50 +74,95 @@ export default function BookService() {
     time_slot: "",
     additional_notes: "",
   });
+  const [errors, setErrors] = useState({});
 
-  const update = (field, value) =>
+  const update = (field, value) => {
     setBooking((b) => ({ ...b, [field]: value }));
+    // Clear error when user types
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   const toggleService = (serviceValue) => {
-    setBooking((b) => ({
-      ...b,
-      services: b.services.includes(serviceValue)
-        ? b.services.filter((s) => s !== serviceValue)
-        : [...b.services, serviceValue],
-    }));
+    const newServices = booking.services.includes(serviceValue)
+      ? booking.services.filter((s) => s !== serviceValue)
+      : [...booking.services, serviceValue];
+    
+    setBooking((b) => ({ ...b, services: newServices }));
+    
+    if (newServices.length > 0 && errors.services) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.services;
+        return next;
+      });
+    }
+  };
+
+  const validateStep = () => {
+    const newErrors = {};
+    if (step === 0) {
+      if (booking.services.length === 0) newErrors.services = "Please select at least one service";
+      if (!booking.property_type) newErrors.property_type = "Please select a property type";
+    }
+    if (step === 1) {
+      if (!booking.customer_name.trim()) newErrors.customer_name = "Name is required";
+      else if (!/^[a-zA-Z\s]{2,}$/.test(booking.customer_name)) newErrors.customer_name = "Please enter a valid name";
+      
+      if (!booking.customer_email.trim()) newErrors.customer_email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booking.customer_email)) newErrors.customer_email = "Invalid email format";
+      
+      if (!booking.customer_phone.trim()) newErrors.customer_phone = "Phone is required";
+      else if (!/^\d{10}$/.test(booking.customer_phone.replace(/\D/g, ''))) newErrors.customer_phone = "Invalid phone (10 digits required)";
+      
+      if (!booking.address.trim()) newErrors.address = "Service address is required";
+    }
+    if (step === 2) {
+      if (!booking.date) newErrors.date = "Please select a service date";
+      if (!booking.time_slot) newErrors.time_slot = "Please select a time slot";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep()) {
+      setStep((s) => s + 1);
+      window.scrollTo(0, 0);
+    } else {
+      toast.error("Please correct the errors before proceeding.");
+    }
   };
 
   const handleSubmit = async () => {
+    if (!validateStep()) return;
+    
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("bookings").insert([booking]);
+      // Normalize services array to a string for DB compatibility
+      const submissionData = {
+        ...booking,
+        service: booking.services.join(", ")
+      };
+      delete submissionData.services;
+
+      const { error } = await supabase.from("bookings").insert([submissionData]);
 
       if (error) throw error;
       setSubmitted(true);
+      toast.success("Service scheduled successfully!");
     } catch (error) {
       console.error("Error submitting booking:", error);
       toast.error("Failed to schedule service. Please try again.");
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const validateName = (name) =>
-    /^[a-zA-Z\s]*$/.test(name) && name.trim().length > 0;
-  const validatePhone = (phone) =>
-    /^\d{10}$/.test(phone);
-
-  const canProceed = () => {
-    if (step === 0) return booking.services.length > 0 && booking.property_type;
-    if (step === 1)
-      return (
-        validateName(booking.customer_name) &&
-        validatePhone(booking.customer_phone) &&
-        booking.customer_email.includes('@') &&
-        booking.address.trim().length > 0
-      );
-    if (step === 2) return booking.date && booking.time_slot;
-    return true;
   };
 
   if (submitted) {
@@ -131,13 +177,18 @@ export default function BookService() {
             <h2 className="text-2xl font-semibold text-foreground mb-3">
               Booking Confirmed
             </h2>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed mb-8">
               Your service has been scheduled. We'll send a confirmation to{" "}
               <span className="text-primary font-medium">
                 {booking.customer_email}
               </span>{" "}
               shortly.
             </p>
+            <Link to="/">
+              <Button className="w-full bg-primary text-white rounded-xl h-12 font-semibold">
+                Return to Home
+              </Button>
+            </Link>
           </div>
         </AnimatedSection>
       </div>
@@ -210,6 +261,9 @@ export default function BookService() {
                       );
                     })}
                   </div>
+                  {errors.services && (
+                    <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.services}</p>
+                  )}
                 </div>
 
                 <div className="space-y-3">
@@ -255,6 +309,9 @@ export default function BookService() {
                       </button>
                     ))}
                   </div>
+                  {errors.property_type && (
+                    <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.property_type}</p>
+                  )}
                 </div>
               </div>
             )}
@@ -275,8 +332,9 @@ export default function BookService() {
                         }
                       }}
                       placeholder="Your full name"
-                      className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                      className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.customer_name ? 'border-red-400 focus:border-red-500' : ''}`}
                     />
+                    {errors.customer_name && <p className="text-red-500 text-[10px] ml-1">{errors.customer_name}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Email *</Label>
@@ -286,8 +344,9 @@ export default function BookService() {
                       value={booking.customer_email}
                       onChange={(e) => update("customer_email", e.target.value)}
                       placeholder="your@email.com"
-                      className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                      className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.customer_email ? 'border-red-400 focus:border-red-500' : ''}`}
                     />
+                    {errors.customer_email && <p className="text-red-500 text-[10px] ml-1">{errors.customer_email}</p>}
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -302,8 +361,9 @@ export default function BookService() {
                     }}
                     placeholder="(555) 000-0000 (10 digits max)"
                     maxLength="10"
-                    className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                    className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.customer_phone ? 'border-red-400 focus:border-red-500' : ''}`}
                   />
+                  {errors.customer_phone && <p className="text-red-500 text-[10px] ml-1">{errors.customer_phone}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Service Address *</Label>
@@ -312,8 +372,9 @@ export default function BookService() {
                     value={booking.address}
                     onChange={(e) => update("address", e.target.value)}
                     placeholder="Full address of the property"
-                    className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                    className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.address ? 'border-red-400 focus:border-red-500' : ''}`}
                   />
+                  {errors.address && <p className="text-red-500 text-[10px] ml-1">{errors.address}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
@@ -351,9 +412,10 @@ export default function BookService() {
                         }
                       }}
                       disabled={(date) => date < new Date()}
-                      className="rounded-xl border bg-white/60"
+                      className={`rounded-xl border bg-white/60 ${errors.date ? 'border-red-400' : ''}`}
                     />
                   </div>
+                  {errors.date && <p className="text-red-500 text-[10px] text-center mt-1">{errors.date}</p>}
                 </div>
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold">
@@ -368,13 +430,14 @@ export default function BookService() {
                         className={`p-3 rounded-xl border-2 text-sm font-medium transition-all duration-300 ${
                           booking.time_slot === slot
                             ? "border-primary bg-primary text-white shadow-md"
-                            : "border-border/60 bg-white/40 hover:border-primary/40 text-foreground"
+                            : errors.time_slot ? "border-red-400 bg-white/40 hover:border-primary/40 text-foreground" : "border-border/60 bg-white/40 hover:border-primary/40 text-foreground"
                         }`}
                       >
                         {slot}
                       </button>
                     ))}
                   </div>
+                  {errors.time_slot && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.time_slot}</p>}
                 </div>
               </div>
             )}
@@ -463,8 +526,7 @@ export default function BookService() {
 
               {step < 3 ? (
                 <Button
-                  onClick={() => setStep(step + 1)}
-                  disabled={!canProceed()}
+                  onClick={handleNext}
                   className="btn-3d bg-primary hover:bg-primary/90 text-white h-12 px-8 rounded-xl font-semibold"
                 >
                   Continue

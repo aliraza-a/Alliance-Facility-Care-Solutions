@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-// import { motion } from "framer-motion";
+import { useCMS } from "@/lib/CMSContext";
 import SectionLabel from "../shared/SectionLabel";
 import AnimatedSection from "../shared/AnimatedSection";
 
@@ -20,61 +20,67 @@ const RESIDENTIAL_IMAGE =
 const TEAM_IMAGE =
   "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80&auto=format&fit=crop";
 const BOARDROOM_IMAGE =
-  "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&q=80&auto=format&fit=crop";
+  "https://images.unsplash.com/photo-1593642632823-8f785ba66e45?w=800&q=80&auto=format&fit=crop";
 
-const services = [
+const FALLBACK_SERVICES = [
   {
     title: "Commercial Janitorial",
     description:
       "Comprehensive facility maintenance programs for offices, retail, and corporate environments.",
-    image: HERO_IMAGE,
+    image_url: HERO_IMAGE,
     tag: "Most Popular",
   },
   {
     title: "Deep Cleaning",
     description:
       "Intensive sanitization using hospital-grade protocols for a thorough, spotless result.",
-    image: STEAM_IMAGE,
+    image_url: STEAM_IMAGE,
   },
   {
     title: "Carpet Cleaning",
     description:
       "Professional hot-water extraction removing embedded dirt, allergens, and stains.",
-    image: CARPET_IMAGE,
+    image_url: CARPET_IMAGE,
   },
   {
     title: "Floor Stripping & Waxing",
     description:
       "Expert restoration and protective coatings for a high-gloss, lasting finish.",
-    image: FLOOR_IMAGE,
+    image_url: FLOOR_IMAGE,
   },
   {
     title: "Window Cleaning",
     description:
       "Crystal-clear interior and exterior results for buildings of any height.",
-    image: WINDOW_IMAGE,
+    image_url: WINDOW_IMAGE,
   },
   {
     title: "Residential Cleaning",
     description:
       "Move-in, move-out, and periodic deep cleaning for homes and apartments.",
-    image: RESIDENTIAL_IMAGE,
+    image_url: RESIDENTIAL_IMAGE,
   },
   {
     title: "Restroom Sanitation",
     description:
       "Clinical-grade disinfection to protect health and maintain facility reputation.",
-    image: BOARDROOM_IMAGE,
+    image_url: BOARDROOM_IMAGE,
   },
   {
     title: "Construction Cleanup",
     description:
       "Pre and post-construction debris removal and final detailing for client handoff.",
-    image: TEAM_IMAGE,
+    image_url: TEAM_IMAGE,
   },
 ];
 
 export default function ServicesOverview() {
+  const { services: cmsServices } = useCMS();
+  
+  const displayServices = cmsServices && cmsServices.length > 0 
+    ? cmsServices.slice(0, 8) 
+    : FALLBACK_SERVICES;
+
   return (
     <section className="py-24 lg:py-36 relative overflow-hidden">
       {/* Background */}
@@ -104,12 +110,12 @@ export default function ServicesOverview() {
 
         {/* Image Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {services.map((service, i) => (
-            <AnimatedSection key={service.title} delay={i * 0.07}>
+          {displayServices.map((service, i) => (
+            <AnimatedSection key={service.id || service.title} delay={i * 0.07}>
               <Link to="/services">
                 <div className="service-img-card image-card aspect-[3/4] cursor-pointer group">
                   <img
-                    src={service.image}
+                    src={service.image_url}
                     alt={service.title}
                     className="w-full h-full object-cover"
                   />

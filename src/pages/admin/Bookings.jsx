@@ -168,7 +168,7 @@ export default function AdminBookings() {
                         <div>
                           <p className="text-sm font-semibold text-[var(--admin-text)]">{booking.customer_name}</p>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <Mail className="w-3 h-3 text-[var(--admin-text-muted)]" />
+                            <Mail className="w-4 h-4 text-[var(--admin-text-muted)]" />
                             <span className="text-xs text-[var(--admin-text-muted)]">{booking.customer_email}</span>
                           </div>
                         </div>
@@ -180,11 +180,11 @@ export default function AdminBookings() {
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-2 text-[var(--admin-text)]">
-                        <Calendar className="w-3.5 h-3.5 opacity-50" />
+                        <Calendar className="w-4 h-4 opacity-50" />
                         <span className="text-xs font-medium">{booking.date}</span>
                       </div>
                       <div className="flex items-center gap-2 text-[var(--admin-text-muted)] mt-1">
-                        <Clock className="w-3.5 h-3.5 opacity-50" />
+                        <Clock className="w-4 h-4 opacity-50" />
                         <span className="text-xs">{booking.time_slot}</span>
                       </div>
                     </td>

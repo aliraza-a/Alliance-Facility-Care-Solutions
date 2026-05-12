@@ -12,7 +12,7 @@ export default function ServiceDetailCard({ service, index, reversed }) {
         <div className={reversed ? "lg:order-2" : ""}>
           <div className="image-card aspect-[4/3] group">
             <img
-              src={service.image}
+              src={service.image_url || service.image}
               alt={service.title}
               className="w-full h-full object-cover"
             />

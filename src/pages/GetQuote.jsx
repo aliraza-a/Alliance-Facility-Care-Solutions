@@ -44,24 +44,67 @@ export default function GetQuote() {
     frequency: "",
     additional_details: "",
   });
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.customer_name.trim()) newErrors.customer_name = "Name is required";
+    
+    if (!form.customer_email.trim()) newErrors.customer_email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.customer_email)) newErrors.customer_email = "Invalid email";
+    
+    if (!form.customer_phone.trim()) newErrors.customer_phone = "Phone is required";
+    else if (!/^\d{10}$/.test(form.customer_phone.replace(/\D/g, ''))) newErrors.customer_phone = "10 digits required";
+    
+    if (form.services.length === 0) newErrors.services = "Select at least one service";
+    if (!form.property_type) newErrors.property_type = "Required";
+    if (!form.property_size) newErrors.property_size = "Required";
+    if (!form.frequency) newErrors.frequency = "Required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const toggleService = (service) => {
-    setForm((f) => ({
-      ...f,
-      services: f.services.includes(service)
-        ? f.services.filter((s) => s !== service)
-        : [...f.services, service],
-    }));
+    const newServices = form.services.includes(service)
+      ? form.services.filter((s) => s !== service)
+      : [...form.services, service];
+    
+    setForm((f) => ({ ...f, services: newServices }));
+    if (newServices.length > 0 && errors.services) {
+      setErrors(prev => {
+        const next = {...prev};
+        delete next.services;
+        return next;
+      });
+    }
   };
+
+  const updateField = (field, value) => {
+    setForm(f => ({ ...f, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => {
+        const next = {...prev};
+        delete next[field];
+        return next;
+      });
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields correctly.");
+      return;
+    }
+    
     setSubmitting(true);
     try {
       const { error } = await supabase.from("quote_requests").insert([form]);
 
       if (error) throw error;
       setSubmitted(true);
+      toast.success("Quote request submitted!");
       // Reset form after successful submission
       setTimeout(() => {
         setSubmitted(false);
@@ -75,6 +118,7 @@ export default function GetQuote() {
           frequency: "",
           additional_details: "",
         });
+        setErrors({});
       }, 3000);
     } catch (error) {
       console.error("Error submitting quote:", error);
@@ -184,6 +228,9 @@ export default function GetQuote() {
                       </label>
                     ))}
                   </div>
+                  {errors.services && (
+                    <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.services}</p>
+                  )}
                 </div>
 
                 {/* Property Details */}
@@ -230,6 +277,9 @@ export default function GetQuote() {
                       </button>
                     ))}
                   </div>
+                  {errors.property_type && (
+                    <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.property_type}</p>
+                  )}
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -239,12 +289,11 @@ export default function GetQuote() {
                       <Input
                         required
                         value={form.property_size}
-                        onChange={(e) =>
-                          setForm({ ...form, property_size: e.target.value })
-                        }
+                        onChange={(e) => updateField("property_size", e.target.value)}
                         placeholder="e.g. 2500"
-                        className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                        className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.property_size ? 'border-red-400 focus:border-red-500' : ''}`}
                       />
+                      {errors.property_size && <p className="text-red-500 text-[10px] ml-1">{errors.property_size}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
@@ -252,9 +301,7 @@ export default function GetQuote() {
                       </Label>
                       <Select
                         value={form.frequency}
-                        onValueChange={(v) =>
-                          setForm({ ...form, frequency: v })
-                        }
+                        onValueChange={(v) => updateField("frequency", v)}
                       >
                         <SelectTrigger className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900">
                           <SelectValue placeholder="Select frequency" />
@@ -268,6 +315,7 @@ export default function GetQuote() {
                           <SelectItem value="monthly">Monthly</SelectItem>
                         </SelectContent>
                       </Select>
+                      {errors.frequency && <p className="text-red-500 text-[10px] ml-1">{errors.frequency}</p>}
                     </div>
                   </div>
                 </div>
@@ -286,12 +334,13 @@ export default function GetQuote() {
                         onChange={(e) => {
                           const value = e.target.value;
                           if (/^[a-zA-Z\s]*$/.test(value) || value === "") {
-                            setForm({ ...form, customer_name: value });
+                            updateField("customer_name", value);
                           }
                         }}
                         placeholder="Your full name"
-                        className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                        className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.customer_name ? 'border-red-400 focus:border-red-500' : ''}`}
                       />
+                      {errors.customer_name && <p className="text-red-500 text-[10px] ml-1">{errors.customer_name}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">Email *</Label>
@@ -300,11 +349,12 @@ export default function GetQuote() {
                         required
                         value={form.customer_email}
                         onChange={(e) =>
-                          setForm({ ...form, customer_email: e.target.value })
+                          updateField("customer_email", e.target.value)
                         }
                         placeholder="your@email.com"
-                        className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                        className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.customer_email ? 'border-red-400 focus:border-red-500' : ''}`}
                       />
+                      {errors.customer_email && <p className="text-red-500 text-[10px] ml-1">{errors.customer_email}</p>}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -315,12 +365,13 @@ export default function GetQuote() {
                         const value = e.target.value
                           .replace(/\D/g, "")
                           .slice(0, 10);
-                        setForm({ ...form, customer_phone: value });
+                        updateField("customer_phone", value);
                       }}
                       placeholder="(555) 000-0000 (10 digits max)"
                       maxLength="10"
-                      className="h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
+                      className={`h-12 bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600 ${errors.customer_phone ? 'border-red-400 focus:border-red-500' : ''}`}
                     />
+                    {errors.customer_phone && <p className="text-red-500 text-[10px] ml-1">{errors.customer_phone}</p>}
                   </div>
                 </div>
 
@@ -332,7 +383,7 @@ export default function GetQuote() {
                   <Textarea
                     value={form.additional_details}
                     onChange={(e) =>
-                      setForm({ ...form, additional_details: e.target.value })
+                      updateField("additional_details", e.target.value)
                     }
                     placeholder="Describe any specific requirements or concerns..."
                     className="min-h-[120px] bg-white/60 rounded-xl border-border/60 text-slate-900 placeholder:text-slate-600"
@@ -341,16 +392,7 @@ export default function GetQuote() {
 
                 <Button
                   type="submit"
-                  disabled={
-                    submitting ||
-                    !form.services.length ||
-                    !form.property_type ||
-                    !form.property_size ||
-                    !/^[a-zA-Z\s]{2,}$/.test(form.customer_name) ||
-                    !form.customer_email.includes('@') ||
-                    !/^\d{10}$/.test(form.customer_phone) ||
-                    !form.frequency
-                  }
+                  disabled={submitting}
                   className="btn-3d w-full bg-primary hover:bg-primary/90 text-white h-13 rounded-xl text-sm font-semibold py-4"
                 >
                   {submitting ? "Submitting..." : "Request Your Free Quote"}

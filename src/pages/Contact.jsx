@@ -50,17 +50,51 @@ export default function Contact() {
     phone: "",
     message: "",
   });
+  const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    
+    if (!form.email.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Invalid email";
+    
+    if (!form.phone.trim()) newErrors.phone = "Phone is required";
+    else if (!/^\d{10}$/.test(form.phone.replace(/\D/g, ''))) newErrors.phone = "10 digits required";
+    
+    if (!form.message.trim()) newErrors.message = "Message is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const updateField = (field, value) => {
+    setForm(f => ({ ...f, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => {
+        const next = {...prev};
+        delete next[field];
+        return next;
+      });
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      toast.error("Please fill in all fields correctly.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { error } = await supabase.from("contact_messages").insert([form]);
 
       if (error) throw error;
       setSubmitted(true);
+      toast.success("Message sent successfully!");
     } catch (error) {
       console.error("Error submitting contact message:", error);
       toast.error("Failed to send message. Please try again.");
@@ -133,12 +167,11 @@ export default function Contact() {
                         <Input
                           required
                           value={form.name}
-                          onChange={(e) =>
-                            setForm({ ...form, name: e.target.value })
-                          }
+                          onChange={(e) => updateField("name", e.target.value)}
                           placeholder="Your full name"
-                          className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
+                          className={`h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600 ${errors.name ? 'border-red-400 focus:border-red-500' : ''}`}
                         />
+                        {errors.name && <p className="text-red-500 text-[10px] ml-1">{errors.name}</p>}
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm font-medium text-foreground">
@@ -148,12 +181,11 @@ export default function Contact() {
                           type="email"
                           required
                           value={form.email}
-                          onChange={(e) =>
-                            setForm({ ...form, email: e.target.value })
-                          }
+                          onChange={(e) => updateField("email", e.target.value)}
                           placeholder="your@email.com"
-                          className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
+                          className={`h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600 ${errors.email ? 'border-red-400 focus:border-red-500' : ''}`}
                         />
+                        {errors.email && <p className="text-red-500 text-[10px] ml-1">{errors.email}</p>}
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -167,12 +199,13 @@ export default function Contact() {
                           const value = e.target.value
                             .replace(/\D/g, "")
                             .slice(0, 10);
-                          setForm({ ...form, phone: value });
+                          updateField("phone", value);
                         }}
                         placeholder="(555) 000-0000 (10 digits max)"
                         maxLength="10"
-                        className="h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
+                        className={`h-12 bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600 ${errors.phone ? 'border-red-400 focus:border-red-500' : ''}`}
                       />
+                      {errors.phone && <p className="text-red-500 text-[10px] ml-1">{errors.phone}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-foreground">
@@ -181,12 +214,11 @@ export default function Contact() {
                       <Textarea
                         required
                         value={form.message}
-                        onChange={(e) =>
-                          setForm({ ...form, message: e.target.value })
-                        }
+                        onChange={(e) => updateField("message", e.target.value)}
                         placeholder="Tell us about your facility care needs..."
-                        className="min-h-[160px] bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600"
+                        className={`min-h-[160px] bg-white/60 border-border/60 focus:border-primary/50 rounded-xl text-slate-900 placeholder:text-slate-600 ${errors.message ? 'border-red-400 focus:border-red-500' : ''}`}
                       />
+                      {errors.message && <p className="text-red-500 text-[10px] ml-1">{errors.message}</p>}
                     </div>
                     <Button
                       type="submit"

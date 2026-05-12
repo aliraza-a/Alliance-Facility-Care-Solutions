@@ -136,17 +136,17 @@ export default function AdminMessages() {
                     </div>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--admin-text-muted)]">
                       <div className="flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5" />
+                        <Mail className="w-4 h-4" />
                         {msg.email}
                       </div>
                       {msg.phone && (
                         <div className="flex items-center gap-1.5">
-                          <Phone className="w-3.5 h-3.5" />
+                          <Phone className="w-4 h-4" />
                           {msg.phone}
                         </div>
                       )}
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" />
+                        <Clock className="w-4 h-4" />
                         {new Date(msg.created_at).toLocaleDateString()}
                       </div>
                     </div>

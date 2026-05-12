@@ -113,25 +113,37 @@
     --admin-border: rgba(0, 0, 0, 0.08);
     --admin-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     
-    /* Override global shadcn variables for portals */
-    --background: 155 30% 95%;
+    /* Override global shadcn variables */
+    --background: 155 30% 98%;
+    --foreground: 180 15% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 180 15% 8%;
     --popover: 0 0% 100%;
     --popover-foreground: 180 15% 8%;
+    --muted: 152 20% 94%;
+    --muted-foreground: 180 8% 45%;
+    --border: 180 5% 90%;
   }
 
   .admin-dark {
     --admin-bg: #020807;
     --admin-sidebar: #03110d;
-    --admin-card-bg: rgba(255, 255, 255, 0.05);
+    --admin-card-bg: rgba(255, 255, 255, 0.03);
     --admin-text: #ffffff;
     --admin-text-muted: rgba(255, 255, 255, 0.5);
     --admin-border: rgba(255, 255, 255, 0.1);
-    --admin-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --admin-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
 
-    /* Override global shadcn variables for portals */
+    /* Override global shadcn variables */
     --background: 165 40% 4%;
-    --popover: 165 40% 6%;
+    --foreground: 0 0% 100%;
+    --card: 165 40% 6%;
+    --card-foreground: 0 0% 100%;
+    --popover: 165 40% 8%;
     --popover-foreground: 0 0% 100%;
+    --muted: 165 40% 12%;
+    --muted-foreground: 165 10% 70%;
+    --border: 165 40% 15%;
   }
 
   .glass-card:hover {

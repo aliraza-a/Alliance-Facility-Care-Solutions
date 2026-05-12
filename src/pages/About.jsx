@@ -6,10 +6,12 @@ import { motion } from "framer-motion";
 import SectionLabel from "../components/shared/SectionLabel";
 import AnimatedSection from "../components/shared/AnimatedSection";
 
-const TEAM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/d211f6f72_generated_2322c3ce.png";
-const CLEAN_RESIDENTIAL = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/731386f2c_generated_a7eb843a.png";
-const HERO_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
-const BOARDROOM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/b227f519d_generated_8e867ea9.png";
+import { useCMS } from "@/lib/CMSContext";
+
+const DEFAULT_TEAM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/d211f6f72_generated_2322c3ce.png";
+const DEFAULT_CLEAN_RESIDENTIAL = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/731386f2c_generated_a7eb843a.png";
+const DEFAULT_HERO_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
+const DEFAULT_BOARDROOM_IMAGE = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/b227f519d_generated_8e867ea9.png";
 
 const values = [
   {
@@ -39,13 +41,23 @@ const values = [
 ];
 
 export default function About() {
+  const { getPageBySlug } = useCMS();
+  const page = getPageBySlug("about");
+
+  const pageData = {
+    title: page?.title || "Setting the standard",
+    subtitle: page?.subtitle || "in facility care",
+    content: page?.content || "15 years of trusted service to commercial and residential properties across the region.",
+    image_url: page?.image_url || DEFAULT_TEAM_IMAGE,
+  };
+
   return (
     <div className="pt-20">
 
       {/* Hero Banner */}
       <section className="relative py-28 lg:py-44 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={TEAM_IMAGE} alt="Alliance professional team" className="w-full h-full object-cover object-center" />
+          <img src={pageData.image_url} alt="Alliance professional team" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#031f18]/95 via-[#031f18]/80 to-transparent" />
         </div>
@@ -54,14 +66,14 @@ export default function About() {
           <AnimatedSection className="max-w-2xl">
             <SectionLabel>About Alliance</SectionLabel>
             <h1 className="text-4xl lg:text-6xl font-semibold tracking-tight text-white leading-tight">
-              Setting the standard
+              {pageData.title}
               <br />
               <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
-                in facility care
+                {pageData.subtitle}
               </span>
             </h1>
             <p className="mt-6 text-white/60 leading-relaxed max-w-lg">
-              15 years of trusted service to commercial and residential properties across the region.
+              {pageData.content}
             </p>
           </AnimatedSection>
         </div>
@@ -76,7 +88,7 @@ export default function About() {
             <AnimatedSection>
               <div className="relative">
                 <div className="image-card aspect-[3/4]">
-                  <img src={TEAM_IMAGE} alt="Professional team" className="w-full h-full object-cover" />
+                  <img src={pageData.image_url} alt="Professional team" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#031f18]/60 to-transparent" />
                 </div>
                 {/* Floating stat */}
@@ -144,7 +156,7 @@ export default function About() {
             <AnimatedSection>
               <div className="glass-card rounded-2xl overflow-hidden h-full">
                 <div className="image-card aspect-[16/10]">
-                  <img src={CLEAN_RESIDENTIAL} alt="Pristine residential interior" className="w-full h-full object-cover" />
+                  <img src={DEFAULT_CLEAN_RESIDENTIAL} alt="Pristine residential interior" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#031f18]/70 to-transparent" />
                   <div className="absolute bottom-6 left-6">
                     <span className="bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-full">Residential</span>
@@ -167,7 +179,7 @@ export default function About() {
             <AnimatedSection delay={0.15}>
               <div className="glass-card rounded-2xl overflow-hidden h-full">
                 <div className="image-card aspect-[16/10]">
-                  <img src={BOARDROOM_IMAGE} alt="Clean corporate boardroom" className="w-full h-full object-cover" />
+                  <img src={DEFAULT_BOARDROOM_IMAGE} alt="Clean corporate boardroom" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#031f18]/70 to-transparent" />
                   <div className="absolute bottom-6 left-6">
                     <span className="bg-secondary text-white text-xs font-semibold px-3 py-1.5 rounded-full">Commercial</span>
@@ -226,7 +238,7 @@ export default function About() {
       {/* CTA */}
       <section className="relative py-24 lg:py-36 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
+          <img src={DEFAULT_HERO_IMAGE} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-br from-[#031f18]/96 via-[#052e22]/93 to-[#073828]/88" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">

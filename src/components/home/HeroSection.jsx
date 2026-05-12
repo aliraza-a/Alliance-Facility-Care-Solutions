@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Shield, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
-const HERO_IMAGE =
+import { useCMS } from "@/lib/CMSContext";
+
+const DEFAULT_HERO_IMAGE =
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format&fit=crop";
 
 function AnimatedCounter({ target, suffix = "", duration = 2000 }) {
@@ -38,13 +40,23 @@ function AnimatedCounter({ target, suffix = "", duration = 2000 }) {
 }
 
 export default function HeroSection() {
+  const { getHeroByPageSlug } = useCMS();
+  const hero = getHeroByPageSlug("home");
+
+  const heroData = {
+    title: hero?.title || "The Invisible Standard of Clean",
+    subtitle: hero?.subtitle || "Alliance Facility Care Solutions delivers precision-driven cleaning for commercial and residential environments that demand nothing less than perfection.",
+    image_url: hero?.image_url || DEFAULT_HERO_IMAGE,
+    badge: hero?.badge_text || "Facility Care Excellence — Serving 500+ Properties",
+  };
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <img
-          src={HERO_IMAGE}
-          alt="Modern commercial lobby with pristine polished floors"
+          src={heroData.image_url}
+          alt={heroData.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
@@ -68,7 +80,7 @@ export default function HeroSection() {
           >
             <div className="pulse-dot w-2 h-2 rounded-full bg-emerald-400" />
             <span className="text-xs font-mono font-medium uppercase tracking-widest text-emerald-300">
-              Facility Care Excellence — Serving 500+ Properties
+              {heroData.badge}
             </span>
           </motion.div>
 
@@ -82,11 +94,23 @@ export default function HeroSection() {
             }}
             className="text-5xl md:text-6xl lg:text-7xl font-semibold text-white leading-[1.08] tracking-tight"
           >
-            The Invisible
-            <br />
-            <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
-              Standard of Clean
-            </span>
+            {heroData.title.split('\n').map((line, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <br />}
+                {line}
+              </React.Fragment>
+            ))}
+            {/* If the title doesn't have a span yet, we can handle it or just use the raw title */}
+            {!heroData.title.includes('\n') && heroData.title === "The Invisible Standard of Clean" && (
+              <>
+                The Invisible
+                <br />
+                <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+                  Standard of Clean
+                </span>
+              </>
+            )}
+            {heroData.title !== "The Invisible Standard of Clean" && heroData.title}
           </motion.h1>
 
           <motion.p
@@ -99,10 +123,9 @@ export default function HeroSection() {
             }}
             className="mt-7 text-lg text-white/65 leading-relaxed max-w-lg"
           >
-            Alliance Facility Care Solutions delivers precision-driven cleaning
-            for commercial and residential environments that demand nothing less
-            than perfection.
+            {heroData.subtitle}
           </motion.p>
+
 
           <motion.div
             initial={{ opacity: 0, y: 40 }}
