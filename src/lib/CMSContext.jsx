@@ -16,7 +16,6 @@ export function CMSProvider({ children }) {
   const [settings, setSettings] = useState(null);
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
-  const [heroSections, setHeroSections] = useState([]);
   const [homeSections, setHomeSections] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [faqs, setFaqs] = useState([]);
@@ -49,32 +48,15 @@ export function CMSProvider({ children }) {
           if (payload.eventType === "DELETE") {
             setPages((pages) => pages.filter((p) => p.id !== payload.old.id));
           } else {
-            setPages((pages) =>
-              pages
-                .map((p) => (p.id === payload.new.id ? payload.new : p))
-                .concat(payload.new),
-            );
-          }
-        },
-      )
-      .subscribe();
-
-    const heroSubscription = supabase
-      .channel("hero_sections")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "hero_sections" },
-        (payload) => {
-          if (payload.eventType === "DELETE") {
-            setHeroSections((sections) =>
-              sections.filter((s) => s.id !== payload.old.id),
-            );
-          } else {
-            setHeroSections((sections) =>
-              sections
-                .map((s) => (s.id === payload.new.id ? payload.new : s))
-                .concat(payload.new),
-            );
+            setPages((currentPages) => {
+              const exists = currentPages.find((p) => p.id === payload.new.id);
+              if (exists) {
+                return currentPages.map((p) =>
+                  p.id === payload.new.id ? payload.new : p
+                );
+              }
+              return [...currentPages, payload.new];
+            });
           }
         },
       )
@@ -91,11 +73,15 @@ export function CMSProvider({ children }) {
               items.filter((i) => i.id !== payload.old.id),
             );
           } else {
-            setTestimonials((items) =>
-              items
-                .map((i) => (i.id === payload.new.id ? payload.new : i))
-                .concat(payload.new),
-            );
+            setTestimonials((currentItems) => {
+              const exists = currentItems.find((i) => i.id === payload.new.id);
+              if (exists) {
+                return currentItems.map((i) =>
+                  i.id === payload.new.id ? payload.new : i
+                );
+              }
+              return [...currentItems, payload.new];
+            });
           }
         },
       )
@@ -110,11 +96,38 @@ export function CMSProvider({ children }) {
           if (payload.eventType === "DELETE") {
             setFaqs((items) => items.filter((i) => i.id !== payload.old.id));
           } else {
-            setFaqs((items) =>
-              items
-                .map((i) => (i.id === payload.new.id ? payload.new : i))
-                .concat(payload.new),
-            );
+            setFaqs((currentItems) => {
+              const exists = currentItems.find((i) => i.id === payload.new.id);
+              if (exists) {
+                return currentItems.map((i) =>
+                  i.id === payload.new.id ? payload.new : i
+                );
+              }
+              return [...currentItems, payload.new];
+            });
+          }
+        },
+      )
+      .subscribe();
+
+    const servicesSubscription = supabase
+      .channel("services")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "services" },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            setServices((items) => items.filter((i) => i.id !== payload.old.id));
+          } else {
+            setServices((currentItems) => {
+              const exists = currentItems.find((i) => i.id === payload.new.id);
+              if (exists) {
+                return currentItems.map((i) =>
+                  i.id === payload.new.id ? payload.new : i
+                );
+              }
+              return [...currentItems, payload.new];
+            });
           }
         },
       )
@@ -123,9 +136,9 @@ export function CMSProvider({ children }) {
     return () => {
       settingsSubscription.unsubscribe();
       pagesSubscription.unsubscribe();
-      heroSubscription.unsubscribe();
       testimonialsSubscription.unsubscribe();
       faqsSubscription.unsubscribe();
+      servicesSubscription.unsubscribe();
     };
   }, []);
 
@@ -157,13 +170,6 @@ export function CMSProvider({ children }) {
         .order("menu_order");
       setNavigation(navData || []);
 
-      // Fetch hero sections
-      const { data: heroData } = await supabase
-        .from("hero_sections")
-        .select("*")
-        .eq("is_active", true);
-      setHeroSections(heroData || []);
-
       // Fetch home sections
       const { data: homeSectionsData } = await supabase
         .from("home_sections")
@@ -193,7 +199,7 @@ export function CMSProvider({ children }) {
         .from("services")
         .select("*")
         .eq("is_active", true)
-        .order("service_order");
+        .order("created_at", { ascending: true });
       setServices(servicesData || []);
     } catch (err) {
       console.error("Error fetching CMS data:", err);
@@ -208,9 +214,16 @@ export function CMSProvider({ children }) {
     return pages.find((p) => p.slug === slug);
   };
 
-  // Get hero section by page slug
+  // Get hero section by page slug (Unified to Page table)
   const getHeroByPageSlug = (slug) => {
-    return heroSections.find((h) => h.page_slug === slug);
+    const page = pages.find((p) => p.slug === slug);
+    if (!page) return null;
+    return {
+      title: page.hero_title,
+      subtitle: page.hero_subtitle,
+      description: page.hero_description,
+      image_url: page.hero_image_url,
+    };
   };
 
   // Update settings
@@ -238,7 +251,6 @@ export function CMSProvider({ children }) {
     settings,
     pages,
     navigation,
-    heroSections,
     homeSections,
     testimonials,
     faqs,

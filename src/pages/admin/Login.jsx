@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
+import { Sparkles, Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff } from "lucide-react";
 import AnimatedSection from "@/components/shared/AnimatedSection";
 
 export default function AdminLogin() {
@@ -12,6 +12,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020807] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="admin-dark min-h-screen bg-[#020807] flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-teal-500/10 blur-[120px] rounded-full pointer-events-none" />
@@ -73,18 +74,24 @@ export default function AdminLogin() {
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-1">
                 <Label className="text-sm font-medium text-white/70">Password</Label>
-                <button type="button" className="text-xs text-emerald-400 hover:text-emerald-300">Forgot password?</button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="bg-white/5 border-white/10 focus:border-emerald-500/50 hover:bg-white/10 focus:bg-white/10 rounded-xl h-12 pl-12 text-white placeholder:text-white/20 transition-all"
+                  className="bg-white/5 border-white/10 focus:border-emerald-500/50 hover:bg-white/10 focus:bg-white/10 rounded-xl h-12 pl-12 pr-12 text-white placeholder:text-white/20 transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 

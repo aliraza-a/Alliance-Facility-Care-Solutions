@@ -7,7 +7,10 @@ import AnimatedSection from "../shared/AnimatedSection";
 export default function ServiceDetailCard({ service, index, reversed }) {
   return (
     <AnimatedSection>
-      <div className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center`}>
+      <div 
+        id={service.slug || service.title?.toLowerCase().replace(/\s+/g, '-')}
+        className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center`}
+      >
         {/* Image */}
         <div className={reversed ? "lg:order-2" : ""}>
           <div className="image-card aspect-[4/3] group">

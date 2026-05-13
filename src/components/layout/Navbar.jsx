@@ -38,9 +38,8 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        navTheme === "light" ? "bg-white shadow-md py-3" : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${navTheme === "light" ? "bg-white shadow-md py-3" : "bg-transparent py-5"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between">
@@ -67,13 +66,12 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-semibold tracking-wide transition-colors duration-300 ${
-                  navTheme === "transparent"
-                    ? "text-white hover:text-emerald-400"
-                    : location.pathname === link.path
-                      ? "text-primary"
-                      : "text-slate-600 hover:text-primary"
-                }`}
+                className={`text-sm font-semibold tracking-wide transition-colors duration-300 ${navTheme === "transparent"
+                  ? "text-white hover:text-emerald-400"
+                  : location.pathname === link.path
+                    ? "text-primary"
+                    : "text-slate-600 hover:text-primary"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -84,22 +82,20 @@ export default function Navbar() {
             <Link to="/quote">
               <Button
                 variant="outline"
-                className={`text-sm font-bold rounded-xl transition-all ${
-                  navTheme === "transparent"
-                    ? "border-white/30 text-white hover:bg-white/10"
-                    : "border-primary/20 text-primary hover:bg-primary/5"
-                }`}
+                className={`text-sm font-bold rounded-xl transition-all ${navTheme === "transparent"
+                  ? "border-white/30 text-white hover:bg-white/10"
+                  : "border-primary/20 text-primary hover:bg-primary/5 hover:text-primary"
+                  }`}
               >
                 Get a Quote
               </Button>
             </Link>
             <Link to="/book">
               <Button
-                className={`text-sm font-bold rounded-xl shadow-lg transition-all ${
-                  navTheme === "transparent"
-                    ? "bg-white text-primary hover:bg-emerald-50"
-                    : "bg-primary text-white hover:bg-primary/90"
-                }`}
+                className={`text-sm font-bold rounded-xl shadow-lg transition-all ${navTheme === "transparent"
+                  ? "bg-white text-primary hover:bg-emerald-50"
+                  : "bg-primary text-white hover:bg-primary/90"
+                  }`}
               >
                 Book Now
               </Button>
@@ -133,11 +129,10 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`block text-lg font-bold ${
-                    location.pathname === link.path
-                      ? "text-primary"
-                      : "text-slate-600"
-                  }`}
+                  className={`block text-lg font-bold ${location.pathname === link.path
+                    ? "text-primary"
+                    : "text-slate-600"
+                    }`}
                 >
                   {link.label}
                 </Link>

@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Settings, Image, Megaphone, Search as SearchIcon } from "lucide-react";
 
 export default function AdminPages() {
   const [pages, setPages] = useState([]);
@@ -37,6 +39,16 @@ export default function AdminPages() {
     is_published: true,
     show_in_menu: false,
     menu_order: 0,
+    cta_title: "",
+    cta_subtitle: "",
+    cta_image_url: "",
+    cta_bg_type: "gradient",
+    cta_bg_color: "#031f18",
+    cta_bg_opacity: 0.9,
+    hero_title: "",
+    hero_subtitle: "",
+    hero_description: "",
+    hero_image_url: "",
   });
 
   useEffect(() => {
@@ -74,6 +86,16 @@ export default function AdminPages() {
       is_published: true,
       show_in_menu: false,
       menu_order: 0,
+      cta_title: "",
+      cta_subtitle: "",
+      cta_image_url: "",
+      cta_bg_type: "gradient",
+      cta_bg_color: "#031f18",
+      cta_bg_opacity: 0.9,
+      hero_title: "",
+      hero_subtitle: "",
+      hero_description: "",
+      hero_image_url: "",
     });
     setEditingPage(null);
   };
@@ -87,18 +109,23 @@ export default function AdminPages() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-
     try {
+      // Partial update safety: only send fields that have values
+      // This prevents overwriting existing data with empty strings if fields are cleared
+      const dataToSubmit = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => v !== "" && v !== null)
+      );
+      
       if (editingPage) {
         const { error } = await supabase
           .from("pages")
-          .update(formData)
+          .update(dataToSubmit)
           .eq("id", editingPage.id);
 
         if (error) throw error;
         toast.success("Page updated successfully");
       } else {
-        const { error } = await supabase.from("pages").insert([formData]);
+        const { error } = await supabase.from("pages").insert([dataToSubmit]);
 
         if (error) throw error;
         toast.success("Page created successfully");
@@ -177,174 +204,267 @@ export default function AdminPages() {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="admin-dialog-form space-y-6">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Page Slug
-                  </Label>
-                  <Input
-                    required
-                    value={formData.slug}
-                    onChange={(e) =>
-                      setFormData({ ...formData, slug: e.target.value })
-                    }
-                    className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
-                    placeholder="e.g. about, services"
-                    disabled={editingPage}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Page Title
-                  </Label>
-                  <Input
-                    required
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
-                    placeholder="Page title"
-                  />
-                </div>
-              </div>
+              <Tabs defaultValue="general" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 bg-black/5 dark:bg-white/5 p-1 rounded-xl mb-6">
+                  <TabsTrigger value="general" className="rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                    <Settings className="w-4 h-4 mr-2" />
+                    General
+                  </TabsTrigger>
+                  <TabsTrigger value="hero" className="rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                    <Image className="w-4 h-4 mr-2" />
+                    Hero
+                  </TabsTrigger>
+                  <TabsTrigger value="cta" className="rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                    <Megaphone className="w-4 h-4 mr-2" />
+                    CTA
+                  </TabsTrigger>
+                  <TabsTrigger value="seo" className="rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                    <SearchIcon className="w-4 h-4 mr-2" />
+                    SEO
+                  </TabsTrigger>
+                </TabsList>
 
-              <div className="space-y-2">
-                <Label className="text-[var(--admin-text-muted)]">
-                  Subtitle
-                </Label>
-                <Input
-                  value={formData.subtitle}
-                  onChange={(e) =>
-                    setFormData({ ...formData, subtitle: e.target.value })
-                  }
-                  className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
-                  placeholder="Page subtitle"
-                />
-              </div>
+                <TabsContent value="general" className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[var(--admin-text-muted)]">Page Slug</Label>
+                      <Input
+                        required
+                        value={formData.slug}
+                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                        className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                        placeholder="e.g. about, services"
+                        disabled={editingPage}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[var(--admin-text-muted)]">Page Title</Label>
+                      <Input
+                        required
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                        placeholder="Page title"
+                      />
+                    </div>
+                  </div>
 
-              <div className="space-y-2">
-                <Label className="text-[var(--admin-text-muted)]">
-                  Description
-                </Label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[80px]"
-                  placeholder="Brief description"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Subtitle</Label>
+                    <Input
+                      value={formData.subtitle}
+                      onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                      placeholder="Page subtitle"
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <Label className="text-[var(--admin-text-muted)]">
-                  Page Content
-                </Label>
-                <Textarea
-                  value={formData.content}
-                  onChange={(e) =>
-                    setFormData({ ...formData, content: e.target.value })
-                  }
-                  className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[150px] font-mono text-sm"
-                  placeholder="Page content (HTML supported)"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Description</Label>
+                    <Textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[80px]"
+                      placeholder="Brief description"
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <Label className="text-[var(--admin-text-muted)]">
-                  Page Image
-                </Label>
-                <ImageUploadField
-                  value={formData.image_url}
-                  onChange={(url) =>
-                    setFormData({ ...formData, image_url: url })
-                  }
-                  bucket="images"
-                  folder="pages"
-                  label="Page Image"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Page Content</Label>
+                    <Textarea
+                      value={formData.content}
+                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[150px] font-mono text-sm"
+                      placeholder="Page content (HTML supported)"
+                    />
+                  </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Meta Description
-                  </Label>
-                  <Input
-                    value={formData.meta_description}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        meta_description: e.target.value,
-                      })
-                    }
-                    className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
-                    placeholder="SEO description"
-                    maxLength={160}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Meta Keywords
-                  </Label>
-                  <Input
-                    value={formData.meta_keywords}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        meta_keywords: e.target.value,
-                      })
-                    }
-                    className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
-                    placeholder="keyword1, keyword2"
-                  />
-                </div>
-              </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-black/5 dark:bg-white/5">
+                      <Label className="text-[var(--admin-text-muted)]">Published</Label>
+                      <Switch
+                        checked={formData.is_published}
+                        onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-black/5 dark:bg-white/5">
+                      <Label className="text-[var(--admin-text-muted)]">Show in Menu</Label>
+                      <Switch
+                        checked={formData.show_in_menu}
+                        onCheckedChange={(checked) => setFormData({ ...formData, show_in_menu: checked })}
+                      />
+                    </div>
+                  </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-black/5 dark:bg-white/5">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Published
-                  </Label>
-                  <Switch
-                    checked={formData.is_published}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_published: checked })
-                    }
-                  />
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-black/5 dark:bg-white/5">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Show in Menu
-                  </Label>
-                  <Switch
-                    checked={formData.show_in_menu}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, show_in_menu: checked })
-                    }
-                  />
-                </div>
-              </div>
+                  {formData.show_in_menu && (
+                    <div className="space-y-2">
+                      <Label className="text-[var(--admin-text-muted)]">Menu Order</Label>
+                      <Input
+                        type="number"
+                        value={formData.menu_order}
+                        onChange={(e) => setFormData({ ...formData, menu_order: parseInt(e.target.value) })}
+                        className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                      />
+                    </div>
+                  )}
+                </TabsContent>
 
-              {formData.show_in_menu && (
-                <div className="space-y-2">
-                  <Label className="text-[var(--admin-text-muted)]">
-                    Menu Order
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.menu_order}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        menu_order: parseInt(e.target.value),
-                      })
-                    }
-                    className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
-                  />
-                </div>
-              )}
+                <TabsContent value="hero" className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Hero Title</Label>
+                    <Input
+                      value={formData.hero_title || ""}
+                      onChange={(e) => setFormData({ ...formData, hero_title: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                      placeholder="Title displayed in the hero section"
+                    />
+                    <p className="text-[10px] text-emerald-500/70 ml-1 italic">Leave empty to use the Page Title</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Hero Subtitle</Label>
+                    <Input
+                      value={formData.hero_subtitle || ""}
+                      onChange={(e) => setFormData({ ...formData, hero_subtitle: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                      placeholder="Subtitle displayed in the hero section"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Hero Description</Label>
+                    <Textarea
+                      value={formData.hero_description || ""}
+                      onChange={(e) => setFormData({ ...formData, hero_description: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[100px]"
+                      placeholder="Brief text displayed below the hero title"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Hero Background Image</Label>
+                    <ImageUploadField
+                      value={formData.hero_image_url || ""}
+                      onChange={(url) => setFormData({ ...formData, hero_image_url: url })}
+                      bucket="images"
+                      folder="heroes"
+                      label="Hero Image"
+                    />
+                    <p className="text-[10px] text-emerald-500/70 ml-1 italic">This is the image your client wanted to sync!</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="cta" className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">CTA Title</Label>
+                    <Input
+                      value={formData.cta_title || ""}
+                      onChange={(e) => setFormData({ ...formData, cta_title: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                      placeholder="CTA Title"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">CTA Subtitle</Label>
+                    <Textarea
+                      value={formData.cta_subtitle || ""}
+                      onChange={(e) => setFormData({ ...formData, cta_subtitle: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[80px]"
+                      placeholder="CTA Subtitle"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">CTA Background Image</Label>
+                    <ImageUploadField
+                      value={formData.cta_image_url || ""}
+                      onChange={(url) => setFormData({ ...formData, cta_image_url: url })}
+                      bucket="images"
+                      folder="cta"
+                      label="CTA Image"
+                    />
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[var(--admin-text-muted)]">Background Type</Label>
+                      <select
+                        value={formData.cta_bg_type || "gradient"}
+                        onChange={(e) => setFormData({ ...formData, cta_bg_type: e.target.value })}
+                        className="w-full bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl h-10 px-3"
+                      >
+                        <option value="gradient">Gradient</option>
+                        <option value="solid">Solid</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[var(--admin-text-muted)]">Background Color</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={formData.cta_bg_color || "#031f18"}
+                          onChange={(e) => setFormData({ ...formData, cta_bg_color: e.target.value })}
+                          className="w-12 h-10 p-1 rounded-lg"
+                        />
+                        <Input
+                          value={formData.cta_bg_color || "#031f18"}
+                          onChange={(e) => setFormData({ ...formData, cta_bg_color: e.target.value })}
+                          className="flex-1 bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">
+                      Background Opacity ({(formData.cta_bg_opacity * 100).toFixed(0)}%)
+                    </Label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={formData.cta_bg_opacity || 0.9}
+                      onChange={(e) => setFormData({ ...formData, cta_bg_opacity: parseFloat(e.target.value) })}
+                      className="w-full"
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="seo" className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Meta Description</Label>
+                    <Textarea
+                      value={formData.meta_description}
+                      onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl min-h-[100px]"
+                      placeholder="SEO description (max 160 chars)"
+                      maxLength={160}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Meta Keywords</Label>
+                    <Input
+                      value={formData.meta_keywords}
+                      onChange={(e) => setFormData({ ...formData, meta_keywords: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl"
+                      placeholder="keyword1, keyword2"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">Listing Thumbnail Image</Label>
+                    <ImageUploadField
+                      value={formData.image_url}
+                      onChange={(url) => setFormData({ ...formData, image_url: url })}
+                      bucket="images"
+                      folder="pages"
+                      label="Thumbnail Image"
+                    />
+                    <p className="text-[10px] text-[var(--admin-text-muted)] ml-1 italic">Used for list previews and cards</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </form>
             <div className="admin-dialog-footer">
               <Button

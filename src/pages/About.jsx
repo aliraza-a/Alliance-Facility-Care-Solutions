@@ -41,14 +41,15 @@ const values = [
 ];
 
 export default function About() {
-  const { getPageBySlug } = useCMS();
+  const { getPageBySlug, getHeroByPageSlug } = useCMS();
   const page = getPageBySlug("about");
+  const hero = getHeroByPageSlug("about");
 
   const pageData = {
-    title: page?.title || "Setting the standard",
-    subtitle: page?.subtitle || "in facility care",
-    content: page?.content || "15 years of trusted service to commercial and residential properties across the region.",
-    image_url: page?.image_url || DEFAULT_TEAM_IMAGE,
+    title: hero?.title || page?.title || "Setting the standard",
+    subtitle: hero?.subtitle || page?.subtitle || "in facility care",
+    content: hero?.description || page?.description || page?.content || "15 years of trusted service to commercial and residential properties across the region.",
+    image_url: hero?.image_url || page?.image_url || DEFAULT_TEAM_IMAGE,
   };
 
   return (
@@ -238,20 +239,44 @@ export default function About() {
       {/* CTA */}
       <section className="relative py-24 lg:py-36 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={DEFAULT_HERO_IMAGE} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#031f18]/96 via-[#052e22]/93 to-[#073828]/88" />
+          {page?.cta_image_url ? (
+            <img src={page.cta_image_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <img src={DEFAULT_HERO_IMAGE} alt="" className="w-full h-full object-cover" />
+          )}
+          
+          {page?.cta_bg_type === 'solid' ? (
+            <div 
+              className="absolute inset-0" 
+              style={{ 
+                backgroundColor: page.cta_bg_color || '#031f18', 
+                opacity: page.cta_bg_opacity ?? 0.9 
+              }} 
+            />
+          ) : (
+            <div 
+              className="absolute inset-0 bg-gradient-to-br"
+              style={{ 
+                backgroundImage: `linear-gradient(to bottom right, ${page?.cta_bg_color || '#031f18'}, ${page?.cta_bg_color || '#052e22'}e6, ${page?.cta_bg_color || '#073828'}cc)`,
+                opacity: page?.cta_bg_opacity ?? 0.96
+              }}
+            />
+          )}
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <AnimatedSection>
             <h2 className="text-3xl lg:text-5xl font-semibold tracking-tight text-white">
-              Experience the{" "}
-              <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
-                Alliance difference
-              </span>
+              {page?.cta_title || (
+                <>
+                  Experience the{" "}
+                  <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
+                    Alliance difference
+                  </span>
+                </>
+              )}
             </h2>
-            <p className="mt-5 text-white/55 max-w-lg mx-auto leading-relaxed">
-              Discover why hundreds of property managers and homeowners trust us 
-              with their most demanding facility care needs.
+            <p className="mt-5 text-white/75 max-w-lg mx-auto leading-relaxed">
+              {page?.cta_subtitle || "Discover why hundreds of property managers and homeowners trust us with their most demanding facility care needs."}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/quote">

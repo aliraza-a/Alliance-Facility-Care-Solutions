@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import SectionLabel from "../components/shared/SectionLabel";
 import AnimatedSection from "../components/shared/AnimatedSection";
+import { useCMS } from "@/lib/CMSContext";
 import BookingSteps from "../components/booking/BookingSteps";
 import { toast } from "sonner";
 
@@ -75,6 +76,16 @@ export default function BookService() {
     additional_notes: "",
   });
   const [errors, setErrors] = useState({});
+  
+  const { getHeroByPageSlug } = useCMS();
+  const hero = getHeroByPageSlug("book");
+
+  const heroData = {
+    title: hero?.title || "Book your",
+    subtitle: hero?.subtitle || "service online",
+    description: hero?.description || "Experience the Alliance difference. Schedule your professional facility care in just a few clicks.",
+    image_url: hero?.image_url || HERO_IMAGE,
+  };
 
   const update = (field, value) => {
     setBooking((b) => ({ ...b, [field]: value }));
@@ -199,15 +210,15 @@ export default function BookService() {
     <div className="pt-20 min-h-screen relative overflow-hidden">
       {/* Header image */}
       <div className="relative h-40 overflow-hidden">
-        <img src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
+        <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/90 to-[#031f18]/60" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <span className="text-xs font-mono uppercase tracking-widest text-emerald-300">
-              Online Booking
+              {heroData.title}
             </span>
             <h1 className="text-2xl lg:text-3xl font-semibold text-white mt-1">
-              Schedule Your Service
+              {heroData.subtitle}
             </h1>
           </div>
         </div>

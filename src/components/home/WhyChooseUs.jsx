@@ -51,12 +51,12 @@ export default function WhyChooseUs() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#031f18]/50 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <div className="glass-card rounded-xl p-4">
-                    <p className="text-xs font-mono uppercase tracking-widest text-primary font-semibold mb-1">
+                    <p className="text-xs font-mono uppercase tracking-widest text-white/70 font-semibold mb-1">
                       Client Satisfaction
                     </p>
                     <div className="flex items-end gap-2">
-                      <p className="text-3xl font-bold text-foreground">99%</p>
-                      <p className="text-muted-foreground text-sm mb-1">retention rate</p>
+                      <p className="text-3xl font-bold text-white">99%</p>
+                      <p className="text-white/70 text-sm mb-1">retention rate</p>
                     </div>
                     <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
                       <motion.div

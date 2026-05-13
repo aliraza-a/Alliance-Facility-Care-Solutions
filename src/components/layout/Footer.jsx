@@ -26,7 +26,7 @@ const SERVICES = [
 ];
 
 export default function Footer() {
-  const { settings } = useCMS();
+  const { settings, services } = useCMS();
   
   const footerData = settings ? {
     logo_url: settings.logo_url || DEFAULT_LOGO_URL,
@@ -82,15 +82,22 @@ export default function Footer() {
               Services
             </h4>
             <div className="space-y-3">
-              {SERVICES.map((service) => (
-                <Link
-                  key={service}
-                  to="/services"
-                  className="block text-sm text-white/55 hover:text-white transition-colors duration-300"
-                >
-                  {service}
-                </Link>
-              ))}
+              {(services && services.length > 0 ? services : SERVICES).map((service) => {
+                const serviceName = typeof service === 'string' ? service : service.title;
+                const serviceSlug = typeof service === 'string' 
+                  ? service.toLowerCase().replace(/\s+/g, '-')
+                  : (service.slug || service.title.toLowerCase().replace(/\s+/g, '-'));
+                
+                return (
+                  <Link
+                    key={serviceSlug}
+                    to={`/services#${serviceSlug}`}
+                    className="block text-sm text-white/55 hover:text-white transition-colors duration-300"
+                  >
+                    {serviceName}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 

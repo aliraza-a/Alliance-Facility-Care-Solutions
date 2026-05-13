@@ -8,6 +8,7 @@ import { Phone, Mail, MapPin, Clock, Send, CheckCircle2 } from "lucide-react";
 import SectionLabel from "../components/shared/SectionLabel";
 import AnimatedSection from "../components/shared/AnimatedSection";
 import { toast } from "sonner";
+import { useCMS } from "@/lib/CMSContext";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format&fit=crop";
@@ -53,6 +54,16 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  
+  const { getHeroByPageSlug } = useCMS();
+  const hero = getHeroByPageSlug("contact");
+
+  const heroData = {
+    title: hero?.title || "Let's discuss your",
+    subtitle: hero?.subtitle || "facility needs",
+    description: hero?.description || "Reach out to our team for a consultation, quote, or any questions. We respond within one business day.",
+    image_url: hero?.image_url || HERO_IMAGE,
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -108,7 +119,7 @@ export default function Contact() {
       {/* Header */}
       <section className="relative py-28 lg:py-40 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
+          <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#031f18]/95 via-[#031f18]/80 to-transparent" />
         </div>
@@ -117,15 +128,14 @@ export default function Contact() {
           <AnimatedSection className="max-w-2xl">
             <SectionLabel>Contact Us</SectionLabel>
             <h1 className="text-4xl lg:text-6xl font-semibold tracking-tight text-white leading-tight">
-              Let's discuss your
+              {heroData.title}
               <br />
               <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
-                facility needs
+                {heroData.subtitle}
               </span>
             </h1>
             <p className="mt-6 text-white/60 max-w-lg leading-relaxed">
-              Reach out to our team for a consultation, quote, or any questions.
-              We respond within one business day.
+              {heroData.description}
             </p>
           </AnimatedSection>
         </div>

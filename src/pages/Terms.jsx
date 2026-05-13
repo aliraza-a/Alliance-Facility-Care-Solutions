@@ -1,25 +1,34 @@
-import React from "react";
 import SectionLabel from "../components/shared/SectionLabel";
 import AnimatedSection from "../components/shared/AnimatedSection";
+import { useCMS } from "@/lib/CMSContext";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format&fit=crop";
 
 export default function Terms() {
+  const { getHeroByPageSlug } = useCMS();
+  const hero = getHeroByPageSlug("terms");
+
+  const heroData = {
+    title: hero?.title || "Legal",
+    subtitle: hero?.subtitle || "Terms of Service",
+    image_url: hero?.image_url || HERO_IMAGE,
+  };
+
   return (
     <div className="pt-20">
       {/* Header */}
       <section className="relative py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={HERO_IMAGE} alt="" className="w-full h-full object-cover" />
+          <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#031f18]/95 via-[#031f18]/80 to-transparent" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
           <AnimatedSection className="max-w-2xl">
-            <SectionLabel>Legal</SectionLabel>
+            <SectionLabel>{heroData.title}</SectionLabel>
             <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight text-white leading-tight">
-              Terms of Service
+              {heroData.subtitle}
             </h1>
           </AnimatedSection>
         </div>
@@ -51,7 +60,7 @@ export default function Terms() {
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-8">
               2. Use License
             </h3>
-            <p className="text-white/70 leading-relaxed mb-4">
+            <p className="text-black/70 leading-relaxed mb-4">
               Permission is granted to temporarily download one copy of the
               materials (information or software) on Alliance Facility Care
               Solutions' website for personal, non-commercial transitory viewing
@@ -146,7 +155,7 @@ export default function Terms() {
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-8">
               Contact Us
             </h3>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-black/70 leading-relaxed">
               If you have any questions about these Terms of Service, please
               contact us at:
               <br />

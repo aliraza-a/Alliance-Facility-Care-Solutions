@@ -28,12 +28,6 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
   { icon: Settings, label: "Settings", href: "/admin/settings", group: "CMS" },
   { icon: FileEdit, label: "Pages", href: "/admin/pages", group: "CMS" },
-  {
-    icon: Lightbulb,
-    label: "Hero Sections",
-    href: "/admin/hero-sections",
-    group: "CMS",
-  },
   { icon: Navigation, label: "Menu", href: "/admin/menu", group: "CMS" },
   {
     icon: Star,

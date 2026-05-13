@@ -34,7 +34,6 @@ import AdminSettings from "./pages/admin/Settings";
 import AdminPages from "./pages/admin/Pages";
 import AdminMenuBuilder from "./pages/admin/MenuBuilder";
 import AdminTestimonials from "./pages/admin/Testimonials";
-import AdminHeroSections from "./pages/admin/HeroSections";
 import AdminFAQs from "./pages/admin/FAQs";
 import AdminBeforeAfterManager from "./pages/admin/BeforeAfterManager";
 
@@ -70,7 +69,6 @@ const AppRoutes = () => {
         <Route path="settings" element={<AdminSettings />} />
         <Route path="pages" element={<AdminPages />} />
         <Route path="menu" element={<AdminMenuBuilder />} />
-        <Route path="hero-sections" element={<AdminHeroSections />} />
         <Route path="testimonials" element={<AdminTestimonials />} />
         <Route path="faqs" element={<AdminFAQs />} />
         <Route path="before-after" element={<AdminBeforeAfterManager />} />

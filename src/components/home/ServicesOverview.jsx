@@ -77,8 +77,11 @@ const FALLBACK_SERVICES = [
 export default function ServicesOverview() {
   const { services: cmsServices } = useCMS();
   
-  const displayServices = cmsServices && cmsServices.length > 0 
-    ? cmsServices.slice(0, 8) 
+  // Filter for active services and limit to top 8
+  const activeServices = cmsServices?.filter(s => s.is_active !== false) || [];
+  
+  const displayServices = activeServices.length > 0 
+    ? activeServices.slice(0, 8) 
     : FALLBACK_SERVICES;
 
   return (
@@ -110,36 +113,39 @@ export default function ServicesOverview() {
 
         {/* Image Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {displayServices.map((service, i) => (
-            <AnimatedSection key={service.id || service.title} delay={i * 0.07}>
-              <Link to="/services">
-                <div className="service-img-card image-card aspect-[3/4] cursor-pointer group">
-                  <img
-                    src={service.image_url}
-                    alt={service.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="service-img-overlay absolute inset-0" />
-                  {service.tag && (
-                    <div className="absolute top-4 left-4 bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full">
-                      {service.tag}
-                    </div>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <h3 className="text-white font-semibold text-base leading-tight mb-1">
-                      {service.title}
-                    </h3>
-                    <p className="text-white/70 text-xs leading-relaxed line-clamp-2 opacity-0 group-hover:opacity-100 duration-400 translate-y-2 group-hover:translate-y-0 transition-transform duration-400">
-                      {service.description}
-                    </p>
-                    <div className="mt-3 flex items-center gap-1 text-emerald-300 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-400">
-                      Learn more <ArrowRight className="w-3 h-3" />
+          {displayServices.map((service, i) => {
+            const slug = service.title.toLowerCase().replace(/\s+/g, "-");
+            return (
+              <AnimatedSection key={service.id || service.title} delay={i * 0.07}>
+                <Link to={`/services#${slug}`}>
+                  <div className="service-img-card image-card aspect-[3/4] cursor-pointer group">
+                    <img
+                      src={service.image_url}
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="service-img-overlay absolute inset-0" />
+                    {service.tag && (
+                      <div className="absolute top-4 left-4 bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        {service.tag}
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 p-5">
+                      <h3 className="text-white font-semibold text-base leading-tight mb-1">
+                        {service.title}
+                      </h3>
+                      <p className="text-white/70 text-xs leading-relaxed line-clamp-2 opacity-0 group-hover:opacity-100 duration-400 translate-y-2 group-hover:translate-y-0 transition-transform duration-400">
+                        {service.description}
+                      </p>
+                      <div className="mt-3 flex items-center gap-1 text-emerald-300 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-400">
+                        Learn more <ArrowRight className="w-3 h-3" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </AnimatedSection>
-          ))}
+                </Link>
+              </AnimatedSection>
+            );
+          })}
         </div>
 
         <AnimatedSection className="text-center mt-12">

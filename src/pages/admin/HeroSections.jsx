@@ -114,10 +114,14 @@ export default function AdminHeroSections() {
     setSubmitting(true);
 
     try {
+      const dataToSubmit = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => v !== "" && v !== null)
+      );
+      
       if (editingHero) {
         const { error } = await supabase
           .from("hero_sections")
-          .update(formData)
+          .update(dataToSubmit)
           .eq("id", editingHero.id);
 
         if (error) throw error;
@@ -125,7 +129,7 @@ export default function AdminHeroSections() {
       } else {
         const { error } = await supabase
           .from("hero_sections")
-          .insert([formData]);
+          .insert([dataToSubmit]);
 
         if (error) throw error;
         toast.success("Hero section created successfully");

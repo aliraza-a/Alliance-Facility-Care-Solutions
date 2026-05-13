@@ -94,14 +94,7 @@ export default function HeroSection() {
             }}
             className="text-5xl md:text-6xl lg:text-7xl font-semibold text-white leading-[1.08] tracking-tight"
           >
-            {heroData.title.split('\n').map((line, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <br />}
-                {line}
-              </React.Fragment>
-            ))}
-            {/* If the title doesn't have a span yet, we can handle it or just use the raw title */}
-            {!heroData.title.includes('\n') && heroData.title === "The Invisible Standard of Clean" && (
+            {heroData.title === "The Invisible Standard of Clean" ? (
               <>
                 The Invisible
                 <br />
@@ -109,8 +102,14 @@ export default function HeroSection() {
                   Standard of Clean
                 </span>
               </>
+            ) : (
+              heroData.title.split('\n').map((line, i) => (
+                <React.Fragment key={i}>
+                  {i > 0 && <br />}
+                  {line}
+                </React.Fragment>
+              ))
             )}
-            {heroData.title !== "The Invisible Standard of Clean" && heroData.title}
           </motion.h1>
 
           <motion.p
