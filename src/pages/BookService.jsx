@@ -85,6 +85,8 @@ export default function BookService() {
     subtitle: hero?.subtitle || "service online",
     description: hero?.description || "Experience the Alliance difference. Schedule your professional facility care in just a few clicks.",
     image_url: hero?.image_url || HERO_IMAGE,
+    background_type: hero?.background_type || "image",
+    background_video_url: hero?.background_video_url || "",
   };
 
   const update = (field, value) => {
@@ -210,7 +212,11 @@ export default function BookService() {
     <div className="pt-20 min-h-screen relative overflow-hidden">
       {/* Header image */}
       <div className="relative h-40 overflow-hidden">
-        <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
+        {heroData.background_type === "video" && heroData.background_video_url ? (
+          <video autoPlay loop muted playsInline className="w-full h-full object-cover" src={heroData.background_video_url} />
+        ) : (
+          <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/90 to-[#031f18]/60" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">

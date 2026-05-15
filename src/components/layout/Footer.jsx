@@ -30,13 +30,14 @@ export default function Footer() {
   
   const footerData = settings ? {
     logo_url: settings.logo_url || DEFAULT_LOGO_URL,
+    logo_width: settings.logo_width || 80,
     company_description: settings.company_description || DEFAULT_FOOTER_DATA.company_description,
     company_phone: settings.company_phone || DEFAULT_FOOTER_DATA.company_phone,
     company_email: settings.company_email || DEFAULT_FOOTER_DATA.company_email,
     company_address: settings.company_address || DEFAULT_FOOTER_DATA.company_address,
     operating_hours: settings.operating_hours || DEFAULT_FOOTER_DATA.operating_hours,
     footer_text: settings.footer_text || DEFAULT_FOOTER_DATA.footer_text,
-  } : DEFAULT_FOOTER_DATA;
+  } : { ...DEFAULT_FOOTER_DATA, logo_width: 80 };
 
   return (
     <footer className="bg-[#031f18] text-white">
@@ -46,7 +47,7 @@ export default function Footer() {
             <img
               src={footerData.logo_url}
               alt="Alliance Facility Care Solutions"
-              className="h-14 w-auto"
+              style={{ width: `${footerData.logo_width}px`, height: 'auto', minWidth: '40px', maxWidth: '100%' }}
             />
             <p className="text-sm text-white/60 leading-relaxed max-w-xs">
               {footerData.company_description}

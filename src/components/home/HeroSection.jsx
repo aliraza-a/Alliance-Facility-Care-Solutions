@@ -48,17 +48,30 @@ export default function HeroSection() {
     subtitle: hero?.subtitle || "Alliance Facility Care Solutions delivers precision-driven cleaning for commercial and residential environments that demand nothing less than perfection.",
     image_url: hero?.image_url || DEFAULT_HERO_IMAGE,
     badge: hero?.badge_text || "Facility Care Excellence — Serving 500+ Properties",
+    background_type: hero?.background_type || "image",
+    background_video_url: hero?.background_video_url || "",
   };
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <img
-          src={heroData.image_url}
-          alt={heroData.title}
-          className="w-full h-full object-cover"
-        />
+        {heroData.background_type === "video" && heroData.background_video_url ? (
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            src={heroData.background_video_url}
+          />
+        ) : (
+          <img
+            src={heroData.image_url}
+            alt={heroData.title}
+            className="w-full h-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#031f18]/95 via-[#031f18]/60 to-transparent" />
       </div>

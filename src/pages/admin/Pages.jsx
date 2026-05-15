@@ -49,6 +49,8 @@ export default function AdminPages() {
     hero_subtitle: "",
     hero_description: "",
     hero_image_url: "",
+    hero_background_type: "image",
+    hero_video_url: "",
   });
 
   useEffect(() => {
@@ -96,6 +98,8 @@ export default function AdminPages() {
       hero_subtitle: "",
       hero_description: "",
       hero_image_url: "",
+      hero_background_type: "image",
+      hero_video_url: "",
     });
     setEditingPage(null);
   };
@@ -110,21 +114,59 @@ export default function AdminPages() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Partial update safety: only send fields that have values
-      // This prevents overwriting existing data with empty strings if fields are cleared
-      const dataToSubmit = Object.fromEntries(
-        Object.entries(formData).filter(([_, v]) => v !== "" && v !== null)
-      );
-      
       if (editingPage) {
+        // Partial update safety: start from original page data and only override
+        // fields the user has actually filled in. Blank fields are ignored.
+        const dataToSubmit = { ...editingPage };
+        Object.entries(formData).forEach(([key, val]) => {
+          if (val !== "" && val !== null && val !== undefined) {
+            dataToSubmit[key] = val;
+          }
+        });
+
         const { error } = await supabase
           .from("pages")
           .update(dataToSubmit)
           .eq("id", editingPage.id);
 
         if (error) throw error;
+
+        // Also sync hero_sections table if a row exists for this page slug.
+        // This ensures the CMS priority lookup (hero_sections first) always
+        // reflects what the admin set via Edit Page → Hero tab.
+        const bgType = dataToSubmit.hero_background_type || "image";
+        const heroUpdate = {
+          background_type: bgType,
+        };
+        if (bgType === "video") {
+          heroUpdate.background_video_url = dataToSubmit.hero_video_url || null;
+          // keep existing image_url as fallback, don't overwrite it
+        } else {
+          // image mode: sync the image, clear video URL
+          if (dataToSubmit.hero_image_url) heroUpdate.image_url = dataToSubmit.hero_image_url;
+          heroUpdate.background_video_url = null;
+        }
+
+        const { data: existingHero } = await supabase
+          .from("hero_sections")
+          .select("id")
+          .eq("page_slug", editingPage.slug)
+          .single();
+
+        if (existingHero) {
+          await supabase
+            .from("hero_sections")
+            .update(heroUpdate)
+            .eq("id", existingHero.id);
+        }
+
         toast.success("Page updated successfully");
       } else {
+        // New page: strip empty strings so DB defaults apply
+        const dataToSubmit = Object.fromEntries(
+          Object.entries(formData).filter(([_, v]) => v !== "" && v !== null && v !== undefined)
+        );
+
         const { error } = await supabase.from("pages").insert([dataToSubmit]);
 
         if (error) throw error;
@@ -341,16 +383,46 @@ export default function AdminPages() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-[var(--admin-text-muted)]">Hero Background Image</Label>
-                    <ImageUploadField
-                      value={formData.hero_image_url || ""}
-                      onChange={(url) => setFormData({ ...formData, hero_image_url: url })}
-                      bucket="images"
-                      folder="heroes"
-                      label="Hero Image"
-                    />
-                    <p className="text-[10px] text-emerald-500/70 ml-1 italic">This is the image your client wanted to sync!</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[var(--admin-text-muted)]">Background Type</Label>
+                      <select
+                        value={formData.hero_background_type || "image"}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFormData(prev => ({ ...prev, hero_background_type: val }));
+                        }}
+                        className="w-full bg-black/5 dark:bg-white/5 border border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl h-10 px-3"
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                      </select>
+                    </div>
+
+                    {(!formData.hero_background_type || formData.hero_background_type === "image") ? (
+                      <div className="space-y-2">
+                        <Label className="text-[var(--admin-text-muted)]">Hero Background Image</Label>
+                        <ImageUploadField
+                          value={formData.hero_image_url || ""}
+                          onChange={(url) => setFormData(prev => ({ ...prev, hero_image_url: url }))}
+                          bucket="images"
+                          folder="heroes"
+                          label="Hero Image"
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Label className="text-[var(--admin-text-muted)]">Hero Background Video</Label>
+                        <ImageUploadField
+                          value={formData.hero_video_url || ""}
+                          onChange={(url) => setFormData(prev => ({ ...prev, hero_video_url: url }))}
+                          bucket="images"
+                          folder="heroes"
+                          label="Upload Video"
+                          accept="video/*"
+                        />
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
 

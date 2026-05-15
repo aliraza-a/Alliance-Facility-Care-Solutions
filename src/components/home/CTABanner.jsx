@@ -3,10 +3,17 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, Calendar, MessageCircle } from "lucide-react";
 import AnimatedSection from "../shared/AnimatedSection";
+import { useCMS } from "@/lib/CMSContext";
 
 const CTA_BG = "https://media.base44.com/images/public/69ed7bb97518bd3e6f00944e/6a65da41b_generated_93cfb333.png";
 
 export default function CTABanner() {
+  const { settings } = useCMS();
+
+  const phone = settings?.company_phone || "+1 314 705 4493";
+  const email = settings?.company_email || "support@alliancefacilitycaresolution.com";
+  const hours = settings?.operating_hours || "Mon – Sat: 7:00 AM – 7:00 PM";
+
   return (
     <section className="py-24 lg:py-36 relative overflow-hidden">
       {/* Background image with heavy overlay */}
@@ -74,9 +81,9 @@ export default function CTABanner() {
 
               <div className="space-y-4">
                 {[
-                  { label: "Phone", value: "+1 314 705 4493", href: "tel:+13147054493" },
-                  { label: "Email", value: "support@alliancefacilitycaresolution.com", href: "mailto:support@alliancefacilitycaresolution.com" },
-                  { label: "Hours", value: "Mon – Sat: 7:00 AM – 7:00 PM", href: null },
+                  { label: "Phone", value: phone, href: `tel:${phone.replace(/\s/g, "")}` },
+                  { label: "Email", value: email, href: `mailto:${email}` },
+                  { label: "Hours", value: hours, href: null },
                 ].map((item) => (
                   <div key={item.label} className="flex justify-between items-center py-3 border-b border-white/10 last:border-0">
                     <span className="text-[10px] font-mono uppercase tracking-widest text-white/60">{item.label}</span>

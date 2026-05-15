@@ -23,6 +23,7 @@ export default function Navbar() {
   const { settings } = useCMS();
 
   const logoUrl = settings?.logo_url || DEFAULT_LOGO_URL;
+  const logoWidth = settings?.logo_width || 80;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -47,7 +48,8 @@ export default function Navbar() {
             <img
               src={logoUrl}
               alt="Alliance Facility Care Solutions"
-              className="h-16 lg:h-20 w-auto transition-all"
+              style={{ width: `${logoWidth}px`, height: 'auto', minWidth: '40px' }}
+              className="transition-all"
               onError={(e) => {
                 e.target.style.display = "none";
               }}

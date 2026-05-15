@@ -42,6 +42,8 @@ export default function Services() {
     subtitle: hero?.subtitle || "facility care solutions",
     description: hero?.description || "From routine maintenance to specialized restoration, we offer a full spectrum of cleaning services designed to protect your property and elevate your environment.",
     image_url: hero?.image_url || HERO_IMAGE,
+    background_type: hero?.background_type || "image",
+    background_video_url: hero?.background_video_url || "",
   };
 
   useEffect(() => {
@@ -61,7 +63,11 @@ export default function Services() {
       {/* Header Banner */}
       <section className="relative py-28 lg:py-40 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
+          {heroData.background_type === "video" && heroData.background_video_url ? (
+            <video autoPlay loop muted playsInline className="w-full h-full object-cover" src={heroData.background_video_url} />
+          ) : (
+            <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#031f18]/95 via-[#031f18]/80 to-transparent" />
         </div>

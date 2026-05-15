@@ -47,6 +47,8 @@ export default function AdminHeroSections() {
     gradient_overlay: true,
     overlay_opacity: 0.7,
     is_active: true,
+    background_type: "image",
+    background_video_url: "",
   });
 
   useEffect(() => {
@@ -99,6 +101,8 @@ export default function AdminHeroSections() {
       gradient_overlay: true,
       overlay_opacity: 0.7,
       is_active: true,
+      background_type: "image",
+      background_video_url: "",
     });
     setEditingHero(null);
   };
@@ -114,11 +118,19 @@ export default function AdminHeroSections() {
     setSubmitting(true);
 
     try {
-      const dataToSubmit = Object.fromEntries(
-        Object.entries(formData).filter(([_, v]) => v !== "" && v !== null)
-      );
-      
+      let dataToSubmit;
+
       if (editingHero) {
+        // Partial update safety: build payload by taking the original record
+        // and only overriding fields that have a non-empty value in formData.
+        // This ensures leaving a field blank never wipes its existing DB value.
+        dataToSubmit = { ...editingHero };
+        Object.entries(formData).forEach(([key, val]) => {
+          if (val !== "" && val !== null && val !== undefined) {
+            dataToSubmit[key] = val;
+          }
+        });
+
         const { error } = await supabase
           .from("hero_sections")
           .update(dataToSubmit)
@@ -127,6 +139,11 @@ export default function AdminHeroSections() {
         if (error) throw error;
         toast.success("Hero section updated successfully");
       } else {
+        // New record: strip empty strings so DB defaults apply
+        dataToSubmit = Object.fromEntries(
+          Object.entries(formData).filter(([_, v]) => v !== "" && v !== null && v !== undefined)
+        );
+
         const { error } = await supabase
           .from("hero_sections")
           .insert([dataToSubmit]);
@@ -266,20 +283,59 @@ export default function AdminHeroSections() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[var(--admin-text-muted)]">
-                  Hero Image
-                </Label>
-                <ImageUploadField
-                  value={formData.image_url}
-                  onChange={(url) =>
-                    setFormData({ ...formData, image_url: url })
-                  }
-                  bucket="images"
-                  folder="hero-sections"
-                  label="Hero Image"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[var(--admin-text-muted)]">Background Type</Label>
+                  <Select
+                    value={formData.background_type || "image"}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, background_type: value })
+                    }
+                  >
+                    <SelectTrigger className="bg-black/5 dark:bg-white/5 border-[var(--admin-border)] text-[var(--admin-text)] rounded-xl">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="image">Image</SelectItem>
+                      <SelectItem value="video">Video URL</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {(!formData.background_type || formData.background_type === "image") ? (
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">
+                      Hero Image
+                    </Label>
+                    <ImageUploadField
+                      value={formData.image_url}
+                      onChange={(url) =>
+                        setFormData({ ...formData, image_url: url })
+                      }
+                      bucket="images"
+                      folder="hero-sections"
+                      label="Hero Image"
+                      required
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label className="text-[var(--admin-text-muted)]">
+                      Hero Video
+                    </Label>
+                    <ImageUploadField
+                      value={formData.background_video_url || ""}
+                      onChange={(url) =>
+                        setFormData({ ...formData, background_video_url: url })
+                      }
+                      bucket="images"
+                      folder="hero-sections"
+                      label="Upload Video"
+                      accept="video/*"
+                      required
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">

@@ -27,6 +27,7 @@ export default function AdminSettings() {
     primary_color: "#10b981",
     secondary_color: "#14b8a6",
     footer_text: "",
+    logo_width: 80,
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,8 +41,15 @@ export default function AdminSettings() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await updateSettings(formData);
-      toast.success("Settings saved successfully");
+      // Partial update safety: start from the current saved settings and
+      // only override with fields the user actually filled in.
+      const safeUpdates = { ...settings };
+      Object.entries(formData).forEach(([key, val]) => {
+        if (val !== "" && val !== null && val !== undefined) {
+          safeUpdates[key] = val;
+        }
+      });
+      await updateSettings(safeUpdates);
     } catch (error) {
       console.error("Error saving settings:", error);
     } finally {
@@ -105,6 +113,27 @@ export default function AdminSettings() {
                   folder="branding"
                   label="Logo Dark"
                 />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-[var(--admin-text-muted)]">
+                Logo Width (px)
+              </Label>
+              <div className="flex items-center gap-4">
+                <Input
+                  type="range"
+                  name="logo_width"
+                  min="40"
+                  max="300"
+                  step="5"
+                  value={formData.logo_width || 80}
+                  onChange={handleChange}
+                  className="flex-1 cursor-pointer"
+                />
+                <span className="text-[var(--admin-text)] w-12 text-right">
+                  {formData.logo_width || 80}px
+                </span>
               </div>
             </div>
 

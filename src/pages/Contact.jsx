@@ -13,37 +13,6 @@ import { useCMS } from "@/lib/CMSContext";
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format&fit=crop";
 
-const contactDetails = [
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+1 314 705 4493",
-    href: "tel:+13147054493",
-    color: "from-emerald-500 to-teal-600",
-  },
-  {
-    icon: Mail,
-    label: "Email",
-    value: "support@alliancefacilitycaresolution.com",
-    href: "mailto:support@alliancefacilitycaresolution.com",
-    color: "from-teal-500 to-cyan-600",
-  },
-  {
-    icon: MapPin,
-    label: "Address",
-    value: "1093 Ferguson Ave St. Louis 63130, Missouri",
-    href: null,
-    color: "from-green-500 to-emerald-600",
-  },
-  {
-    icon: Clock,
-    label: "Hours",
-    value: "Mon – Sat: 7:00 AM – 7:00 PM",
-    href: null,
-    color: "from-cyan-500 to-teal-600",
-  },
-];
-
 export default function Contact() {
   const [form, setForm] = useState({
     name: "",
@@ -55,14 +24,29 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   
-  const { getHeroByPageSlug } = useCMS();
+  const { getHeroByPageSlug, settings } = useCMS();
   const hero = getHeroByPageSlug("contact");
+
+  const phone = settings?.company_phone || "+1 314 705 4493";
+  const email = settings?.company_email || "support@alliancefacilitycaresolution.com";
+  const address = settings?.company_address || "1093 Ferguson Ave St. Louis 63130, Missouri";
+  const hours = settings?.operating_hours || "Mon – Sat: 7:00 AM – 7:00 PM";
+
+  const contactDetails = [
+    { icon: Phone, label: "Phone", value: phone, href: `tel:${phone.replace(/\s/g, "")}`, color: "from-emerald-500 to-teal-600" },
+    { icon: Mail, label: "Email", value: email, href: `mailto:${email}`, color: "from-teal-500 to-cyan-600" },
+    { icon: MapPin, label: "Address", value: address, href: null, color: "from-green-500 to-emerald-600" },
+    { icon: Clock, label: "Hours", value: hours, href: null, color: "from-cyan-500 to-teal-600" },
+  ];
+
 
   const heroData = {
     title: hero?.title || "Let's discuss your",
     subtitle: hero?.subtitle || "facility needs",
     description: hero?.description || "Reach out to our team for a consultation, quote, or any questions. We respond within one business day.",
     image_url: hero?.image_url || HERO_IMAGE,
+    background_type: hero?.background_type || "image",
+    background_video_url: hero?.background_video_url || "",
   };
 
   const validateForm = () => {
@@ -119,7 +103,11 @@ export default function Contact() {
       {/* Header */}
       <section className="relative py-28 lg:py-40 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
+          {heroData.background_type === "video" && heroData.background_video_url ? (
+            <video autoPlay loop muted playsInline className="w-full h-full object-cover" src={heroData.background_video_url} />
+          ) : (
+            <img src={heroData.image_url} alt="" className="w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-[#031f18]/80 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#031f18]/95 via-[#031f18]/80 to-transparent" />
         </div>

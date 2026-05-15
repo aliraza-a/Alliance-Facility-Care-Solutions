@@ -11,6 +11,7 @@ export default function ImageUploadField({
   bucket = "images",
   folder = "",
   required = false,
+  accept = "image/*",
 }) {
   const [preview, setPreview] = useState(value || null);
   const [uploading, setUploading] = useState(false);
@@ -60,11 +61,21 @@ export default function ImageUploadField({
 
       {preview ? (
         <div className="relative group">
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-48 object-cover rounded-xl border border-[var(--admin-border)]"
-          />
+          {accept.includes("video") ? (
+            <video
+              src={preview}
+              autoPlay
+              loop
+              muted
+              className="w-full h-48 object-cover rounded-xl border border-[var(--admin-border)]"
+            />
+          ) : (
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-full h-48 object-cover rounded-xl border border-[var(--admin-border)]"
+            />
+          )}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
             <Button
               type="button"
@@ -105,10 +116,10 @@ export default function ImageUploadField({
         >
           <Upload className="w-8 h-8 text-[var(--admin-text-muted)] mx-auto mb-2 opacity-50" />
           <p className="text-sm text-[var(--admin-text-muted)] font-medium">
-            Click to upload image
+            {accept.includes("video") ? "Click to upload video" : "Click to upload image"}
           </p>
           <p className="text-xs text-[var(--admin-text-muted)]/50 mt-1">
-            PNG, JPG, WebP or GIF (max 5MB)
+            {accept.includes("video") ? "MP4, WebM, OGG (max 50MB)" : "PNG, JPG, WebP or GIF (max 5MB)"}
           </p>
           {uploading && (
             <div className="mt-4 flex items-center justify-center gap-2">
@@ -122,7 +133,7 @@ export default function ImageUploadField({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         onChange={handleFileChange}
         className="hidden"
         disabled={uploading}

@@ -20,6 +20,7 @@ export function CMSProvider({ children }) {
   const [testimonials, setTestimonials] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [services, setServices] = useState([]);
+  const [heroSections, setHeroSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -133,12 +134,38 @@ export function CMSProvider({ children }) {
       )
       .subscribe();
 
+    const heroSectionsSubscription = supabase
+      .channel("hero_sections")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "hero_sections" },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            setHeroSections((items) => items.filter((i) => i.id !== payload.old.id));
+          } else {
+            setHeroSections((currentItems) => {
+              const exists = currentItems.find((i) => i.id === payload.new.id);
+              if (exists) {
+                return currentItems.map((i) =>
+                  i.id === payload.new.id ? payload.new : i
+                );
+              }
+              // Only add if is_active
+              if (payload.new.is_active) return [...currentItems, payload.new];
+              return currentItems;
+            });
+          }
+        },
+      )
+      .subscribe();
+
     return () => {
       settingsSubscription.unsubscribe();
       pagesSubscription.unsubscribe();
       testimonialsSubscription.unsubscribe();
       faqsSubscription.unsubscribe();
       servicesSubscription.unsubscribe();
+      heroSectionsSubscription.unsubscribe();
     };
   }, []);
 
@@ -151,8 +178,16 @@ export function CMSProvider({ children }) {
       const { data: settingsData } = await supabase
         .from("site_settings")
         .select("*")
+        .limit(1)
         .single();
       setSettings(settingsData);
+
+      // Fetch hero sections
+      const { data: heroSectionsData } = await supabase
+        .from("hero_sections")
+        .select("*")
+        .eq("is_active", true);
+      setHeroSections(heroSectionsData || []);
 
       // Fetch published pages
       const { data: pagesData } = await supabase
@@ -213,9 +248,24 @@ export function CMSProvider({ children }) {
   const getPageBySlug = (slug) => {
     return pages.find((p) => p.slug === slug);
   };
-
-  // Get hero section by page slug (Unified to Page table)
+  // Get hero section by page slug.
+  // Priority: dedicated hero_sections table → pages table hero fields
   const getHeroByPageSlug = (slug) => {
+    // 1. Check dedicated hero_sections table first
+    const heroSection = heroSections.find((h) => h.page_slug === slug);
+    if (heroSection) {
+      return {
+        title: heroSection.title,
+        subtitle: heroSection.subtitle,
+        description: heroSection.description,
+        image_url: heroSection.image_url,
+        badge_text: heroSection.cta_text,
+        background_type: heroSection.background_type || "image",
+        background_video_url: heroSection.background_video_url,
+      };
+    }
+
+    // 2. Fall back to pages table hero fields (set via Edit Page → Hero tab)
     const page = pages.find((p) => p.slug === slug);
     if (!page) return null;
     return {
@@ -223,6 +273,9 @@ export function CMSProvider({ children }) {
       subtitle: page.hero_subtitle,
       description: page.hero_description,
       image_url: page.hero_image_url,
+      badge_text: null,
+      background_type: page.hero_background_type || "image",
+      background_video_url: page.hero_video_url,
     };
   };
 
@@ -232,6 +285,7 @@ export function CMSProvider({ children }) {
       const { data, error } = await supabase
         .from("site_settings")
         .update(updates)
+        .eq("id", settings.id)
         .select()
         .single();
 

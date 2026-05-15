@@ -11,15 +11,18 @@ export async function uploadImage(file, bucket = "images", folder = "") {
   if (!file) throw new Error("No file provided");
 
   // Validate file type
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  const allowedTypes = [
+    "image/jpeg", "image/png", "image/webp", "image/gif",
+    "video/mp4", "video/webm", "video/ogg"
+  ];
   if (!allowedTypes.includes(file.type)) {
-    throw new Error("Invalid file type. Allowed: JPEG, PNG, WebP, GIF");
+    throw new Error("Invalid file type. Allowed: JPEG, PNG, WebP, GIF, MP4, WebM, OGG");
   }
 
-  // Validate file size (max 5MB)
-  const maxSize = 5 * 1024 * 1024;
+  // Validate file size (max 50MB for videos, images are typically smaller but we'll use one limit)
+  const maxSize = 50 * 1024 * 1024;
   if (file.size > maxSize) {
-    throw new Error("File size exceeds 5MB limit");
+    throw new Error("File size exceeds 50MB limit");
   }
 
   try {
